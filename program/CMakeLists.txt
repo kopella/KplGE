@@ -24,6 +24,6 @@ elseif(${KPLGE_TARGET_PLATFORM} MATCHES "linux")
 else()
     # platform: Empty
     # gfx api: Empty
-    add_executable(program
+    add_executable(empty
         empty.cc)
 endif()
