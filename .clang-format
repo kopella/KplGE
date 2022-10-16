@@ -1,0 +1,9 @@
+# Run manually to reformat a file:
+# clang-format -i --style=file <file>
+BasedOnStyle: Google
+Language: Cpp
+# Force int* foo spacing style:
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+SortIncludes: false

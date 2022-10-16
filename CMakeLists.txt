@@ -44,9 +44,4 @@ link_directories(
 # external - OpenGL
 find_package(OpenGL REQUIRED)
 
-# external - glad
-include_directories(
-    ${KPLGE_EXTERNAL_ROOT}/../all/glad/include
-)
-
 add_subdirectory(program)

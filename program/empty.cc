@@ -1,6 +1,6 @@
-#include <iostream>
+#include "kpl-log.h"
 
 int main() {
-  std::cout << "Hello, world!\n";
+  log_to_console(info, "Hello, world!");
   return 0;
 }
