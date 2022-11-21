@@ -27,6 +27,7 @@ include_directories(
 # platform
 include_directories(
     ${CMAKE_SOURCE_DIR}/platform/windows
+    ${CMAKE_SOURCE_DIR}/platform/windows/graphics
 )
 
 # external

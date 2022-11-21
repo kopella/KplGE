@@ -11,8 +11,6 @@ class IApplication : public IRuntimeModule {
 
   int tick() override = 0;
 
-  virtual void create_window() = 0;
-
   virtual bool check_quit_tag() = 0;
 };
 }  // namespace kplge

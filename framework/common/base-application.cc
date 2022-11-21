@@ -1,7 +1,7 @@
 #include "base-application.h"
 #include "kpl-log.h"
 
-kplge::BaseApplication::BaseApplication(GraphicsConfiguration& gfx_config_)
+kplge::BaseApplication::BaseApplication(GfxConfig& gfx_config_)
     : gfx_config_(gfx_config_) {
   quit_tag = false;
 }

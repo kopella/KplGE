@@ -1,9 +1,9 @@
-# Run manually to reformat a file:
-# clang-format -i --style=file <file>
+---
 BasedOnStyle: Google
+---
 Language: Cpp
-# Force int* foo spacing style:
-DerivePointerAlignment: false
-PointerAlignment: Left
+
+# Always break after an open bracket, if the parameters don’t fit on a single line.
+AlignAfterOpenBracket: AlwaysBreak
 
 SortIncludes: false
