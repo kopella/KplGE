@@ -12,11 +12,15 @@ class BaseApplication : public IApplication {
   explicit BaseApplication(GfxConfig& gfx_config);
   ~BaseApplication() override = default;
 
-  int initialize() override;
-  int finalize() override;
+  erroc initialize() override;
+  erroc finalize() override;
 
-  int tick() override;
-  bool check_quit_tag() override;
+  erroc tick() override;
+
+  bool check_quit_tag();
+
+ protected:
+  void change_quit_tag();
 
  private:
   bool quit_tag;

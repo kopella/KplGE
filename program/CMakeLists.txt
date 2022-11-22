@@ -3,7 +3,11 @@ if(${KPLGE_TARGET_PLATFORM} MATCHES "windows")
         # platform: Windows
         # gfx api: OpenGL
         add_executable(program
-            ogl-windows-program.cc)
+            win-ogl-program.cc)
+        target_link_libraries(program
+            framework
+            platform
+        )
     elseif(${KPLEG_GFX_API} MATCHES "dx11")
     # platform: Windows
     # gfx api: DirectX 11
@@ -14,7 +18,7 @@ if(${KPLGE_TARGET_PLATFORM} MATCHES "windows")
         # platform: Windows
         # gfx api: Empty
         add_executable(program
-            windows-program.cc)
+            win-program.cc)
     endif()
 elseif(${KPLGE_TARGET_PLATFORM} MATCHES "linux")
     if(${KPLEG_GFX_API} MATCHES "ogl")

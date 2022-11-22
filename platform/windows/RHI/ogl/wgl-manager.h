@@ -7,17 +7,17 @@ class WglManager : public OglManager {
  public:
   ~WglManager() override = default;
 
-  int initialize() override;
-  int finalize() override;
+  erroc initialize() override;
+  erroc finalize() override;
 
-  int tick() override;
+  erroc tick() override;
+
+  int init_wgl(HDC h_dc);
+  int kill_wgl(HINSTANCE h_inst, HWND h_wnd, HDC h_dc, HGLRC h_rc);
+  int load_gl_func();
 
  private:
   HGLRC h_gl_rc;
-
-  HGLRC init_wgl(HDC h_dc);
-  void kill_wgl(HINSTANCE h_inst, HWND h_wnd, HDC h_dc, HGLRC h_rc);
-  int load_gl_func();
 
  public:
   PFNGLATTACHSHADERPROC glAttachShader;

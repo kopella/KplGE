@@ -1,8 +1,6 @@
 #include "wgl-manager.h"
 
-#include "kpl-log.h"
-
-HGLRC kplge::WglManager::init_wgl(HDC h_dc) {
+int kplge::WglManager::init_wgl(HDC h_dc) {
   PIXELFORMATDESCRIPTOR
   des_pf = {
       .nSize = sizeof(des_pf),
@@ -18,33 +16,40 @@ HGLRC kplge::WglManager::init_wgl(HDC h_dc) {
 
   int n_pf = ChoosePixelFormat(h_dc, &des_pf);
   if (!n_pf) {
-    log_to_console(error, "Failed to find a suitable pixel format.");
+    // Failed to find a suitable pixel format.
+    return 0;
   }
   if (!SetPixelFormat(h_dc, n_pf, &des_pf)) {
-    log_to_console(error, "Failed to set the pixel format.");
+    // Failed to set the pixel format.");
+    return 0;
   }
   HGLRC h_rc = wglCreateContext(h_dc);
   if (!h_rc) {
-    log_to_console(error, "Failed to create a OpenGL rendering context.");
+    // Failed to create a OpenGL rendering context.
+    return 0;
   }
   if (!wglMakeCurrent(h_dc, h_rc)) {
-    log_to_console(error, "Failed to activate the OpenGL rendering context.");
+    // Failed to activate the OpenGL rendering context.
+    return 0;
   }
   if (!load_gl_func()) {
-    log_to_console(error, "Failed to load OpenGL's function.");
+    // Failed to load OpenGL's function.
+    return 0;
   }
-
-  return h_rc;
+  return 1;
 }
 
-void kplge::WglManager::kill_wgl(
+int kplge::WglManager::kill_wgl(
     HINSTANCE h_inst, HWND h_wnd, HDC h_dc, HGLRC h_rc) {
   if (!wglMakeCurrent(h_dc, 0)) {
-    log_to_console(error, "Failed to detach the rendering context.");
+    // Failed to detach the rendering context.
+    return 0;
   }
   if (!wglDeleteContext(h_rc)) {
-    log_to_console(error, "Failed to delete the rendering context.");
+    // Failed to delete the rendering context.
+    return 0;
   }
+  return 1;
 }
 
 int kplge::WglManager::load_gl_func() {

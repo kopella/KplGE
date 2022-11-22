@@ -6,9 +6,9 @@ class OglManager : public GfxManager {
  public:
   ~OglManager() override;
 
-  int initialize() override;
-  int finalize() override;
+  erroc initialize() override;
+  erroc finalize() override;
 
-  int tick() override;
+  erroc tick() override;
 };
 }  // namespace kplge

@@ -1,16 +1,22 @@
 #include "base-application.h"
 #include "kpl-log.h"
 
-kplge::BaseApplication::BaseApplication(GfxConfig& gfx_config_)
-    : gfx_config_(gfx_config_) {
+erroc kplge::BaseApplication::initialize() {
   quit_tag = false;
-}
-
-int kplge::BaseApplication::initialize() {
+  /*
   for (IManager* manager : managers) {
     if ((manager->initialize()) != 0) {
       log_to_console(error, "Manager initialize failed");
     }
   }
-  return 0;
+  */
+  return KPL_NO_ERR;
 }
+
+erroc kplge::BaseApplication::finalize() { return KPL_NO_ERR; }
+
+erroc kplge::BaseApplication::tick() { return KPL_NO_ERR; }
+
+bool kplge::BaseApplication::check_quit_tag() { return quit_tag; }
+
+void kplge::BaseApplication::change_quit_tag() { quit_tag = true; }

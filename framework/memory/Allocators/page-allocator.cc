@@ -8,16 +8,16 @@
 
 using namespace kplge;
 
-kplge::PageAllocator::PageAllocator(size_t data_size, size_t page_size,
-                                    size_t alignment)
+kplge::PageAllocator::PageAllocator(
+    size_t data_size, size_t page_size, size_t alignment)
     : m_pPageList(nullptr), m_pFreeList(nullptr) {
   Reset(data_size, page_size, alignment);
 }
 
 kplge::PageAllocator::~PageAllocator() { FreeAll(); }
 
-void kplge::PageAllocator::Reset(size_t data_size, size_t page_size,
-                                 size_t alignment) {
+void kplge::PageAllocator::Reset(
+    size_t data_size, size_t page_size, size_t alignment) {
   FreeAll();
 
   m_szDataSize = data_size;
@@ -142,6 +142,6 @@ void kplge::PageAllocator::FillAllocatedBlock(BlockHeader* pBlock) {
 }
 #endif
 kplge::BlockHeader* kplge::PageAllocator::NextBlock(BlockHeader* pBlock) {
-  return reinterpret_cast<BlockHeader*>(reinterpret_cast<uint8_t*>(pBlock) +
-                                        m_szBlockSize);
+  return reinterpret_cast<BlockHeader*>(
+      reinterpret_cast<uint8_t*>(pBlock) + m_szBlockSize);
 }

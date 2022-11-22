@@ -5,10 +5,10 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
 # gfx api : empty, ogl, dx11, dx12
-set(KPLEG_GFX_API "empty")
+set(KPLEG_GFX_API "ogl")
 
 # platform : empty, windows, linux
-set(KPLGE_TARGET_PLATFORM "empty")
+set(KPLGE_TARGET_PLATFORM "windows")
 
 # framework
 include_directories(
@@ -45,4 +45,7 @@ link_directories(
 # external - OpenGL
 find_package(OpenGL REQUIRED)
 
+# subdirectory
+add_subdirectory(framework)
+add_subdirectory(platform)
 add_subdirectory(program)

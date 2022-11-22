@@ -3,24 +3,28 @@
 #include <windowsx.h>
 
 #include "base-application.h"
-#include "wgl/wgl-manager.h"
+#include "gfx-manager.h"
 
 namespace kplge {
 class WinOglApplication : public BaseApplication {
  public:
-  int initialize() override;
-  int finalize() override;
+  erroc initialize() override;
+  erroc finalize() override;
 
-  int tick() override;
+  erroc tick() override;
+
+  erroc show_window();
 
  private:
-  WglManager* wgl_manager;
+  GfxManager* gfx_manager;
 
   HINSTANCE h_inst;
   HWND h_wnd;
   HDC h_dc;
 
-  void create_window();
+  int create_window();
+  int destroy_window();
+
   static LRESULT CALLBACK
   wnd_proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

@@ -1,39 +1,44 @@
-#include "win-ogl-application.h"
 #include "base-application.h"
+#include "win-ogl-application.h"
 
-#include "kpl-log.h"
-
-int kplge::WinOglApplication::initialize() {
+erroc kplge::WinOglApplication::initialize() {
   BaseApplication::initialize();
-  create_window();
-  return 0;
+  if (!create_window()) {
+    return WIN_ERR_CWND;
+  }
+  return KPL_NO_ERR;
 }
 
-int kplge::WinOglApplication::finalize() {
+erroc kplge::WinOglApplication::finalize() {
   BaseApplication::finalize();
-  if (!ReleaseDC(h_wnd, h_dc)) {
-    log_to_console(error, "Failed to release the device context.");
+  if (!destroy_window()) {
+    return WIN_ERR_DWND;
   }
-  if (!DestroyWindow(h_wnd)) {
-    log_to_console(error, "Failed to destroy the window.");
-  }
-  if (!UnregisterClass("WGL Application", h_inst)) {
-    log_to_console(error, "Failed to unregister the class.");
-  }
-  return 0;
+  return KPL_NO_ERR;
 }
 
-int kplge::WinOglApplication::tick() {
+erroc kplge::WinOglApplication::tick() {
   BaseApplication::tick();
   MSG msg;
   if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
+    if (msg.message == WM_QUIT) {
+      change_quit_tag();
+      return KPL_NO_ERR;
+    } else {
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
+    }
   }
-  return 0;
+  return KPL_NO_ERR;
 }
 
-void kplge::WinOglApplication::create_window() {
+erroc kplge::WinOglApplication::show_window() {
+  ShowWindow(h_wnd, SW_SHOW);
+  UpdateWindow(h_wnd);
+  return KPL_NO_ERR;
+}
+
+int kplge::WinOglApplication::create_window() {
   h_inst = GetModuleHandle(0);
 
   WNDCLASS wnd_class = {
@@ -45,7 +50,9 @@ void kplge::WinOglApplication::create_window() {
       .lpszClassName = "WGL Application",
   };
 
-  RegisterClass(&wnd_class);
+  if (!RegisterClass(&wnd_class)) {
+    return 0;
+  }
 
   RECT rect = {
       .right = 960,
@@ -58,7 +65,29 @@ void kplge::WinOglApplication::create_window() {
       CW_USEDEFAULT, CW_USEDEFAULT, rect.right - rect.left,
       rect.bottom - rect.top, 0, 0, h_inst, 0);
 
+  if (!h_wnd) {
+    return WIN_ERR_CWND;
+  }
+
   h_dc = GetDC(h_wnd);
+
+  return 1;
+}
+
+int kplge::WinOglApplication::destroy_window() {
+  if (!ReleaseDC(h_wnd, h_dc)) {
+    // Failed to release the device context.
+    return 0;
+  }
+  if (!DestroyWindow(h_wnd)) {
+    // Failed to destroy the window.
+    return 0;
+  }
+  if (!UnregisterClass("WGL Application", h_inst)) {
+    // Failed to unregister the class.
+    return 0;
+  }
+  return 1;
 }
 
 LRESULT CALLBACK kplge::WinOglApplication::wnd_proc(
