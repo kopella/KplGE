@@ -1,4 +1,8 @@
-add_subdirectory(${KPLEG_GFX_API})
+if(${KPLEG_GFX_API} MATCHES "ogl")
+    # platform: Windows
+    # gfx api: OpenGL
+    add_subdirectory(wgl)
+endif()
 
 add_library(RHI INTERFACE)
 

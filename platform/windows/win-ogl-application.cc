@@ -1,3 +1,4 @@
+#include "RHI/wgl/wgl-manager.h"
 #include "base-application.h"
 #include "win-ogl-application.h"
 
@@ -6,14 +7,25 @@ erroc kplge::WinOglApplication::initialize() {
   if (!create_window()) {
     return WIN_ERR_CWND;
   }
+  gfx_manager = new kplge::WglManager(this);
+
+  erroc code = gfx_manager->initialize();
+  if (code != KPL_NO_ERR) {
+    return code;
+  }
   return KPL_NO_ERR;
 }
 
 erroc kplge::WinOglApplication::finalize() {
-  BaseApplication::finalize();
+  erroc code = gfx_manager->finalize();
+  if (code != KPL_NO_ERR) {
+    return code;
+  }
+
   if (!destroy_window()) {
     return WIN_ERR_DWND;
   }
+  BaseApplication::finalize();
   return KPL_NO_ERR;
 }
 
@@ -28,6 +40,10 @@ erroc kplge::WinOglApplication::tick() {
       TranslateMessage(&msg);
       DispatchMessage(&msg);
     }
+  }
+  erroc code = gfx_manager->tick();
+  if (code != KPL_NO_ERR) {
+    return code;
   }
   return KPL_NO_ERR;
 }
@@ -68,17 +84,10 @@ int kplge::WinOglApplication::create_window() {
   if (!h_wnd) {
     return WIN_ERR_CWND;
   }
-
-  h_dc = GetDC(h_wnd);
-
   return 1;
 }
 
 int kplge::WinOglApplication::destroy_window() {
-  if (!ReleaseDC(h_wnd, h_dc)) {
-    // Failed to release the device context.
-    return 0;
-  }
   if (!DestroyWindow(h_wnd)) {
     // Failed to destroy the window.
     return 0;

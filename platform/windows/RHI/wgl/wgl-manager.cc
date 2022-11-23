@@ -1,6 +1,48 @@
 #include "wgl-manager.h"
+#include <winuser.h>
 
-int kplge::WglManager::init_wgl(HDC h_dc) {
+kplge::WglManager::WglManager(WinOglApplication* application) {
+  win_ogl_application = application;
+}
+
+erroc kplge::WglManager::initialize() {
+  if (!init_wgl()) {
+    return GFX_ERR_INIT;
+  }
+
+  shader_prog = load_shader();
+  v_array_obj = load_vertex();
+
+  return KPL_NO_ERR;
+}
+
+erroc kplge::WglManager::finalize() {
+  if (!kill_wgl()) {
+    return GFX_ERR_FINA;
+  }
+  return KPL_NO_ERR;
+}
+
+erroc kplge::WglManager::tick() {
+  glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glUseProgram(shader_prog);
+  glBindVertexArray(v_array_obj);
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  SwapBuffers(h_dc);
+
+  return KPL_NO_ERR;
+}
+
+int kplge::WglManager::init_wgl() {
+  h_dc = GetDC(win_ogl_application->h_wnd);
+  if (!h_dc) {
+    // Failed to get a handle of device context.
+    return 0;
+  }
+
   PIXELFORMATDESCRIPTOR
   des_pf = {
       .nSize = sizeof(des_pf),
@@ -34,19 +76,6 @@ int kplge::WglManager::init_wgl(HDC h_dc) {
   }
   if (!load_gl_func()) {
     // Failed to load OpenGL's function.
-    return 0;
-  }
-  return 1;
-}
-
-int kplge::WglManager::kill_wgl(
-    HINSTANCE h_inst, HWND h_wnd, HDC h_dc, HGLRC h_rc) {
-  if (!wglMakeCurrent(h_dc, 0)) {
-    // Failed to detach the rendering context.
-    return 0;
-  }
-  if (!wglDeleteContext(h_rc)) {
-    // Failed to delete the rendering context.
     return 0;
   }
   return 1;
@@ -206,4 +235,92 @@ int kplge::WglManager::load_gl_func() {
     return 0;
   }
   return 1;
+}
+
+int kplge::WglManager::kill_wgl() {
+  if (!wglMakeCurrent(h_dc, 0)) {
+    // Failed to detach the rendering context.
+    return 0;
+  }
+  if (!wglDeleteContext(h_gl_rc)) {
+    // Failed to delete the rendering context.
+    return 0;
+  }
+  if (!ReleaseDC(win_ogl_application->h_wnd, h_dc)) {
+    // Failed to release the device context.
+    return 0;
+  }
+  return 1;
+}
+
+#define GL_ARRAY_BUFFER 0x8892
+#define GL_STATIC_DRAW 0x88E4
+#define GL_FRAGMENT_SHADER 0x8B30
+#define GL_VERTEX_SHADER 0x8B31
+#define GL_COMPILE_STATUS 0x8B81
+#define GL_LINK_STATUS 0x8B82
+#define GL_INFO_LOG_LENGTH 0x8B84
+#define GL_TEXTURE0 0x84C0
+#define GL_BGRA 0x80E1
+#define GL_ELEMENT_ARRAY_BUFFER 0x8893
+
+GLuint kplge::WglManager::load_shader() {
+  const char* v_shader_src =
+      "#version 330 core\n"
+      "layout (location = 0) in vec3 aPos;\n"
+      "void main()\n"
+      "{\n"
+      "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+      "}\0";
+  const char* f_shader_src =
+      "#version 330 core\n"
+      "out vec4 FragColor;\n"
+      "void main()\n"
+      "{\n"
+      "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+      "}\n\0";
+
+  GLuint v_shader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(v_shader, 1, &v_shader_src, NULL);
+  glCompileShader(v_shader);
+
+  GLuint f_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(f_shader, 1, &f_shader_src, NULL);
+  glCompileShader(f_shader);
+
+  GLuint shader_prog = glCreateProgram();
+  glAttachShader(shader_prog, v_shader);
+  glAttachShader(shader_prog, f_shader);
+  glLinkProgram(shader_prog);
+
+  glDeleteShader(v_shader);
+  glDeleteShader(f_shader);
+
+  return shader_prog;
+}
+
+GLuint kplge::WglManager::load_vertex() {
+  float vertices[] = {
+      -0.5f, -0.5f, 0.0f,  // left
+      0.5f,  -0.5f, 0.0f,  // right
+      0.0f,  0.5f,  0.0f   // top
+  };
+
+  GLuint v_buffer_obj, v_array_obj;
+  glGenVertexArrays(1, &v_array_obj);
+  glGenBuffers(1, &v_buffer_obj);
+
+  glBindVertexArray(v_array_obj);
+
+  glBindBuffer(GL_ARRAY_BUFFER, v_buffer_obj);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0);
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  glBindVertexArray(0);
+
+  return v_array_obj;
 }

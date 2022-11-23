@@ -4,8 +4,6 @@
 namespace kplge {
 class IManager : public IRuntimeModule {
  public:
-  ~IManager() override = default;
-
   erroc initialize() override = 0;
   erroc finalize() override = 0;
 

@@ -1,23 +1,34 @@
 #pragma once
-#include "ogl/ogl-manager.h"
+#include "gfx-manager.h"
+#include "win-ogl-application.h"
+
 #include "wgl-define.h"
 
 namespace kplge {
-class WglManager : public OglManager {
+class WglManager : public GfxManager {
  public:
-  ~WglManager() override = default;
+  WglManager(WinOglApplication* application);
 
   erroc initialize() override;
   erroc finalize() override;
 
   erroc tick() override;
 
-  int init_wgl(HDC h_dc);
-  int kill_wgl(HINSTANCE h_inst, HWND h_wnd, HDC h_dc, HGLRC h_rc);
+ private:
+  WinOglApplication* win_ogl_application;
+  HGLRC h_gl_rc;
+  HDC h_dc;
+
+  int init_wgl();
   int load_gl_func();
 
- private:
-  HGLRC h_gl_rc;
+  int kill_wgl();
+
+  GLuint shader_prog;
+  GLuint v_array_obj;
+
+  GLuint load_shader();
+  GLuint load_vertex();
 
  public:
   PFNGLATTACHSHADERPROC glAttachShader;

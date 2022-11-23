@@ -2,15 +2,14 @@
 #include <vector>
 
 #include "application.h"
-#include "manager.h"
+#include "gfx-manager.h"
 #include "gfx-config.h"
 
 namespace kplge {
 class BaseApplication : public IApplication {
  public:
   BaseApplication() = default;
-  explicit BaseApplication(GfxConfig& gfx_config);
-  ~BaseApplication() override = default;
+  BaseApplication(GfxConfig& gfx_config);
 
   erroc initialize() override;
   erroc finalize() override;
@@ -22,9 +21,10 @@ class BaseApplication : public IApplication {
  protected:
   void change_quit_tag();
 
+  GfxManager* gfx_manager;
+
  private:
   bool quit_tag;
-  std::vector<IManager*> managers;
 
   GfxConfig gfx_config_;
 };

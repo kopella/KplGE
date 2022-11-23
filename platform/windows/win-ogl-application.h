@@ -1,6 +1,5 @@
 #pragma once
 #include <windows.h>
-#include <windowsx.h>
 
 #include "base-application.h"
 #include "gfx-manager.h"
@@ -15,12 +14,11 @@ class WinOglApplication : public BaseApplication {
 
   erroc show_window();
 
- private:
-  GfxManager* gfx_manager;
+  friend class WglManager;
 
+ private:
   HINSTANCE h_inst;
   HWND h_wnd;
-  HDC h_dc;
 
   int create_window();
   int destroy_window();

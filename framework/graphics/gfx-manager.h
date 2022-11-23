@@ -4,8 +4,6 @@
 namespace kplge {
 class GfxManager : public IManager {
  public:
-  ~GfxManager() override = default;
-
   erroc initialize() override = 0;
   erroc finalize() override = 0;
 

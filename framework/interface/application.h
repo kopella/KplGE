@@ -4,8 +4,6 @@
 namespace kplge {
 class IApplication : public IRuntimeModule {
  public:
-  ~IApplication() override = default;
-
   erroc initialize() override = 0;
   erroc finalize() override = 0;
 
