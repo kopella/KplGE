@@ -9,11 +9,11 @@ if(${KPLGE_TARGET_PLATFORM} MATCHES "windows")
             platform
         )
     elseif(${KPLEG_GFX_API} MATCHES "dx11")
-    # platform: Windows
-    # gfx api: DirectX 11
+        # platform: Windows
+        # gfx api: DirectX 11
     elseif(${KPLEG_GFX_API} MATCHES "dx12")
-    # platform: Windows
-    # gfx api: DirectX 12
+        # platform: Windows
+        # gfx api: DirectX 12
     else()
         # platform: Windows
         # gfx api: Empty

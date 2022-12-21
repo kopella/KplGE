@@ -1,4 +1,4 @@
-#include "RHI/wgl/wgl-manager.h"
+#include "RHI/ogl/wgl-manager.h"
 #include "base-application.h"
 #include "win-ogl-application.h"
 
@@ -9,18 +9,19 @@ erroc kplge::WinOglApplication::initialize() {
   }
   gfx_manager = new kplge::WglManager(this);
 
-  erroc code = gfx_manager->initialize();
-  if (code != KPL_NO_ERR) {
-    return code;
-  }
+  // erroc code = gfx_manager->initialize();
+  // if (code != KPL_NO_ERR) {
+  //   return code;
+  // }
+
   return KPL_NO_ERR;
 }
 
 erroc kplge::WinOglApplication::finalize() {
-  erroc code = gfx_manager->finalize();
-  if (code != KPL_NO_ERR) {
-    return code;
-  }
+  // erroc code = gfx_manager->finalize();
+  // if (code != KPL_NO_ERR) {
+  //   return code;
+  // }
 
   if (!destroy_window()) {
     return WIN_ERR_DWND;
@@ -41,10 +42,12 @@ erroc kplge::WinOglApplication::tick() {
       DispatchMessage(&msg);
     }
   }
-  erroc code = gfx_manager->tick();
-  if (code != KPL_NO_ERR) {
-    return code;
-  }
+
+  // erroc code = gfx_manager->tick();
+  // if (code != KPL_NO_ERR) {
+  //   return code;
+  // }
+
   return KPL_NO_ERR;
 }
 
@@ -67,6 +70,7 @@ int kplge::WinOglApplication::create_window() {
   };
 
   if (!RegisterClass(&wnd_class)) {
+    // Failed to register the window.
     return 0;
   }
 
@@ -82,7 +86,8 @@ int kplge::WinOglApplication::create_window() {
       rect.bottom - rect.top, 0, 0, h_inst, 0);
 
   if (!h_wnd) {
-    return WIN_ERR_CWND;
+    // Failed to create the window.
+    return 0;
   }
   return 1;
 }

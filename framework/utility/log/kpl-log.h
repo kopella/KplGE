@@ -1,25 +1,29 @@
 #pragma once
-#include "spdlog/spdlog.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
 
-enum Level { info, debug, warn, error, critical };
+inline void info_to_console(const char* msg) {
+  printf(
+      "["
+      "\e[0;32m"
+      "info"
+      "\e[0m"
+      "]"
+      ": %s"
+      "\n",
+      msg);
+}
 
-template <typename... Args>
-inline void log_to_console(enum Level level, Args&&... args) {
-  switch (level) {
-    case info:
-      spdlog::info(std::forward<Args>(args)...);
-      break;
-    case debug:
-      spdlog::debug(std::forward<Args>(args)...);
-      break;
-    case warn:
-      spdlog::warn(std::forward<Args>(args)...);
-      break;
-    case error:
-      spdlog::error(std::forward<Args>(args)...);
-      break;
-    case critical:
-      spdlog::critical(std::forward<Args>(args)...);
-      break;
-  }
+inline void error_to_console(const char* msg) {
+  printf(
+      "["
+      "\e[0;31m"
+      "error"
+      "\e[0m"
+      "]"
+      ": %s"
+      "\n",
+      msg);
+  exit(1);
 }
