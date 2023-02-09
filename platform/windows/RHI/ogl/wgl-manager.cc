@@ -1,7 +1,7 @@
 #include "wgl-manager.h"
 
 kplge::WglManager::WglManager(WinOglApplication* application) {
-  application = application;
+  this->application = application;
 }
 
 erroc kplge::WglManager::initialize() {

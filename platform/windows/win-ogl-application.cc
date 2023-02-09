@@ -9,19 +9,21 @@ erroc kplge::WinOglApplication::initialize() {
   }
   gfx_manager = new kplge::WglManager(this);
 
-  // erroc code = gfx_manager->initialize();
-  // if (code != KPL_NO_ERR) {
-  //   return code;
-  // }
+  // initialize graphics manager
+  erroc code = gfx_manager->initialize();
+  if (code != KPL_NO_ERR) {
+    return code;
+  }
 
   return KPL_NO_ERR;
 }
 
 erroc kplge::WinOglApplication::finalize() {
-  // erroc code = gfx_manager->finalize();
-  // if (code != KPL_NO_ERR) {
-  //   return code;
-  // }
+  // finalize graphics manager
+  erroc code = gfx_manager->finalize();
+  if (code != KPL_NO_ERR) {
+    return code;
+  }
 
   if (!destroy_window()) {
     return WIN_ERR_DWND;
@@ -43,10 +45,10 @@ erroc kplge::WinOglApplication::tick() {
     }
   }
 
-  // erroc code = gfx_manager->tick();
-  // if (code != KPL_NO_ERR) {
-  //   return code;
-  // }
+  erroc code = gfx_manager->tick();
+  if (code != KPL_NO_ERR) {
+    return code;
+  }
 
   return KPL_NO_ERR;
 }
