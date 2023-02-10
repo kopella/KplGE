@@ -1,4 +1,5 @@
 #include "wgl-manager.h"
+#include "RHI/ogl/wgl-manager.h"
 
 kplge::WglManager::WglManager(WinOglApplication* application) {
   this->application = application;
@@ -17,4 +18,8 @@ erroc kplge::WglManager::finalize() {
 erroc kplge::WglManager::tick() {
 
   return KPL_NO_ERR;
+}
+
+int kplge::WglManager::create_context(){
+  
 }

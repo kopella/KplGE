@@ -1,9 +1,9 @@
 #pragma once
-#include "gfx-manager.h"
+#include "ogl/ogl-manager.h"
 #include "win-ogl-application.h"
 
 namespace kplge {
-class WglManager : public GfxManager {
+class WglManager : public OglManager {
  public:
   WglManager(WinOglApplication* application);
 
@@ -18,10 +18,10 @@ class WglManager : public GfxManager {
   HGLRC h_gl_rc;
   HDC h_dc;
 
-  int get_functions();
+  int get_functions() override;
 
-  int create_context();
-  int delete_context();
+  int create_context() override;
+  int delete_context() override;
 
 };
 }  // namespace kplge
