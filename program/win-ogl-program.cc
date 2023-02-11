@@ -12,7 +12,7 @@ int main() {
   erroc code = KPL_NO_ERR;
 
   code = win_ogl_application->initialize();
-  printf("initialize result: %o\n", code);
+  printf("initialize result: %x\n", code);
 
   win_ogl_application->show_window();
   while (!win_ogl_application->check_quit_tag()) {
@@ -20,7 +20,7 @@ int main() {
   }
 
   code = win_ogl_application->finalize();
-  printf("finalize result: %o\n", code);
+  printf("finalize result: %x\n", code);
 
   delete win_ogl_application;
   return 0;

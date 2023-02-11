@@ -15,8 +15,8 @@ class WglManager : public OglManager {
  private:
   WinOglApplication* application;
 
-  HGLRC h_gl_rc;
   HDC h_dc;
+  HGLRC h_gl_rc;
 
   int get_functions() override;
 
