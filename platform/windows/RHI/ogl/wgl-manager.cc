@@ -1,5 +1,4 @@
 #include "wgl-manager.h"
-#include "RHI/ogl/wgl-manager.h"
 
 #include "kpl-log.h"
 
@@ -7,13 +6,16 @@ kplge::WglManager::WglManager(WinOglApplication* application) {
   this->application = application;
 }
 
-erroc kplge::WglManager::initialize() { 
+erroc kplge::WglManager::initialize() {
   if (!create_context()) return GFX_ERR_INIT;
-  return KPL_NO_ERR; }
+  if (!get_functions()) return GFX_ERR_INIT;
+  return KPL_NO_ERR;
+}
 
-erroc kplge::WglManager::finalize() { 
-  if(!delete_context()) return GFX_ERR_FINA;
-  return KPL_NO_ERR; }
+erroc kplge::WglManager::finalize() {
+  if (!delete_context()) return GFX_ERR_FINA;
+  return KPL_NO_ERR;
+}
 
 erroc kplge::WglManager::tick() { return KPL_NO_ERR; }
 
