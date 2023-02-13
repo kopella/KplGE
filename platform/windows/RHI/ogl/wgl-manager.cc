@@ -1,5 +1,6 @@
 #include "wgl-manager.h"
 
+#include "kpl-config.h"
 #include "kpl-log.h"
 
 kplge::WglManager::WglManager(WinOglApplication* application) {
@@ -17,7 +18,11 @@ erroc kplge::WglManager::finalize() {
   return KPL_NO_ERR;
 }
 
-erroc kplge::WglManager::tick() { return KPL_NO_ERR; }
+erroc kplge::WglManager::tick() {
+  if (!draw_scene()) return GFX_ERR_RUNT;
+  SwapBuffers(h_dc);
+  return KPL_NO_ERR;
+}
 
 int kplge::WglManager::create_context() {
   PIXELFORMATDESCRIPTOR

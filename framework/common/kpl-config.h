@@ -13,3 +13,4 @@ using erroc = uint16_t;
 /* Graphics Error */
 #define GFX_ERR_INIT 0x1101  // Failed to initialize the graphics api.
 #define GFX_ERR_FINA 0x1102  // Failed to finalize the graphics api.
+#define GFX_ERR_RUNT 0x1103; // Graphics module runtime erroe.

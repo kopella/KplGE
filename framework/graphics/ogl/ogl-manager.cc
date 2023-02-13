@@ -6,7 +6,7 @@
 #include <sstream>
 #include <iostream>
 
-void kplge::OglManager::draw_scene() {
+int kplge::OglManager::draw_scene() {
   glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -16,6 +16,8 @@ void kplge::OglManager::draw_scene() {
   glUseProgram(shader_prog);
   glBindVertexArray(v_array_obj);
   glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  return 1;
 }
 
 

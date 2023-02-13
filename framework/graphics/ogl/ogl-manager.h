@@ -16,20 +16,20 @@ class OglManager : public GfxManager {
 
   erroc tick() override = 0;
 
+  /* OpenGL tool functions*/
+  int draw_scene();
+
+  GLuint load_shader();   // return shader program
+  GLuint load_vertex();   // return vertex array object
+  GLuint load_texture();  //
+
  private:
   virtual int get_functions() = 0;
 
   virtual int create_context() = 0;
   virtual int delete_context() = 0;
 
-  /* OpenGL tool functions*/
-  void draw_scene();
-
-  GLuint load_shader();   // return shader program
-  GLuint load_vertex();   // return vertex array object
-  GLuint load_texture();  //
-
- public:
+ protected:
   /* OpenGL functions pointers*/
 
   /* Program */
