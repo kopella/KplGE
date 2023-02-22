@@ -1,8 +1,10 @@
 #include <stdio.h>
 
+#include "kpl-config.h"
+#include "kpl-log.h"
+
 #include "asset-loader.h"
 #include "buffer.h"
-#include "kpl-log.h"
 
 erroc kplge::AssetLoader::initialize() { return KPL_NO_ERR; }
 
@@ -34,24 +36,43 @@ bool kplge::AssetLoader::remove_search_path(const char *path) {
 
 kplge::Buffer kplge::AssetLoader::sync_load_text(const char *path) {
   file_p fp{};
-  Buffer buff;
+  Buffer buffer;
 
   if (!open_file(fp, path, KPL_OPEN_TEXT)) {
-    info_to_console(
-        (std::string{"Can't find file: "} + std::string{path}).data());
+    runtime_info("Can't open file '%s'", path);
   } else {
     size_t length = get_file_size(fp);
 
     uint8_t *data = new uint8_t[length + 1];
     fread(data, length, 1, static_cast<FILE *>(fp));
 
+    runtime_info("Read text file '%s', %zu bytes\n", path, length);
+
     data[length] = '\0';
-    for (int i = 0; i < length + 1; i++) printf("%02x\n", data[i]);
-    buff.set_data(data, length);
+    buffer.set_data(data, length + 1);
 
     colse_file(fp);
   }
-  return buff;
+  return buffer;
+}
+
+kplge::Buffer kplge::AssetLoader::sync_load_binary(const char *path) {
+  file_p fp{};
+  Buffer buffer;
+
+  if (!open_file(fp, path, KPL_OPEN_BINARY)) {
+    runtime_info("Can't open file '%s'", path);
+  } else {
+    size_t length = get_file_size(fp);
+    uint8_t *data = new uint8_t[length];
+    fread(data, length, 1, static_cast<FILE *>(fp));
+
+    runtime_info("Read binary file '%s', %zu bytes\n", path, length);
+
+    buffer.set_data(data, length);
+    colse_file(fp);
+  }
+  return buffer;
 }
 
 bool kplge::AssetLoader::open_file(

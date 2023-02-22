@@ -1,4 +1,3 @@
-#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -8,13 +7,9 @@
 int main() {
   kplge::AssetLoader assetLoader;
 
-  kplge::Buffer buff = assetLoader.sync_load_text("test/test.txt");
-  std::string res{reinterpret_cast<char*>(buff.get_data())};
+  kplge::Buffer buffer = assetLoader.sync_load_text("shader/f_shader.glsl");
+  std::string test_res{reinterpret_cast<char*>(buffer.get_data())};
 
-  std::ofstream outfile;
-  outfile.open("res");
-
-  outfile << res << std::endl;
-
+  std::cout << "Asset loader test result: \n" << test_res << std::endl;
   return 0;
 }
