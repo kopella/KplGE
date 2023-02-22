@@ -4,7 +4,7 @@
 #include "kpl-log.h"
 
 kplge::WglManager::WglManager(WinOglApplication* application) {
-  this->application = application;
+  this->p_application = application;
 }
 
 erroc kplge::WglManager::initialize() {
@@ -38,7 +38,7 @@ int kplge::WglManager::create_context() {
       .iLayerType = PFD_MAIN_PLANE,
   };
 
-  h_dc = GetDC(application->h_wnd);
+  h_dc = GetDC(p_application->h_wnd);
   int n_pf = ChoosePixelFormat(h_dc, &des_pf);
   if (!n_pf) {
     error_to_console("Failed to find a suitable pixel format.");
@@ -64,7 +64,7 @@ int kplge::WglManager::delete_context() {
   if (!wglDeleteContext(h_gl_rc)) {
     error_to_console("Failed to delete the rendering context.");
   }
-  if (!ReleaseDC(application->h_wnd, h_dc)) {
+  if (!ReleaseDC(p_application->h_wnd, h_dc)) {
     error_to_console("Failed to release the device context.");
   }
   return 1;

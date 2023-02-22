@@ -22,8 +22,8 @@ int kplge::OglManager::draw_scene() {
 
 
 GLuint kplge::OglManager::load_shader() {
-  const char* v_shader_path = "../../assets/shader/v_shader.glsl";
-  const char* f_shader_path = "../../assets/shader/f_shader.glsl";
+  const char* v_shader_path = "../../asset/shader/v_shader.glsl";
+  const char* f_shader_path = "../../asset/shader/f_shader.glsl";
 
   std::string v_shader_code;
   std::string f_shader_code;

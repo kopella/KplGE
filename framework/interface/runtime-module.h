@@ -4,6 +4,8 @@
 namespace kplge {
 class IRuntimeModule {
  public:
+  virtual ~IRuntimeModule() = default;
+
   virtual erroc initialize() = 0;
   virtual erroc finalize() = 0;
 

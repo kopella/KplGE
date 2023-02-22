@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include <cstdint>
 #define KPL_DEBUG
 
 /* Error Code */

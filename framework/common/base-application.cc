@@ -3,13 +3,6 @@
 
 erroc kplge::BaseApplication::initialize() {
   quit_tag = false;
-  /*
-  for (IManager* manager : managers) {
-    if ((manager->initialize()) != 0) {
-      log_to_console(error, "Manager initialize failed");
-    }
-  }
-  */
   return KPL_NO_ERR;
 }
 

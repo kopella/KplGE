@@ -11,9 +11,7 @@ erroc kplge::WinOglApplication::initialize() {
 
   // initialize graphics manager
   erroc code = gfx_manager->initialize();
-  if (code != KPL_NO_ERR) {
-    return code;
-  }
+  if (code != KPL_NO_ERR) return code;
 
   return KPL_NO_ERR;
 }
@@ -21,13 +19,11 @@ erroc kplge::WinOglApplication::initialize() {
 erroc kplge::WinOglApplication::finalize() {
   // finalize graphics manager
   erroc code = gfx_manager->finalize();
-  if (code != KPL_NO_ERR) {
-    return code;
-  }
+  if (code != KPL_NO_ERR) return code;
+  delete gfx_manager;
 
-  if (!destroy_window()) {
-    return WIN_ERR_DWND;
-  }
+  if (!destroy_window()) return WIN_ERR_DWND;
+
   BaseApplication::finalize();
   return KPL_NO_ERR;
 }
@@ -46,9 +42,7 @@ erroc kplge::WinOglApplication::tick() {
   }
 
   erroc code = gfx_manager->tick();
-  if (code != KPL_NO_ERR) {
-    return code;
-  }
+  if (code != KPL_NO_ERR) return code;
 
   return KPL_NO_ERR;
 }
@@ -71,10 +65,9 @@ int kplge::WinOglApplication::create_window() {
       .lpszClassName = "WGL Application",
   };
 
-  if (!RegisterClass(&wnd_class)) {
+  if (!RegisterClass(&wnd_class))
     // Failed to register the window.
     return 0;
-  }
 
   RECT rect = {
       .right = 960,
@@ -87,22 +80,22 @@ int kplge::WinOglApplication::create_window() {
       CW_USEDEFAULT, CW_USEDEFAULT, rect.right - rect.left,
       rect.bottom - rect.top, 0, 0, h_inst, 0);
 
-  if (!h_wnd) {
+  if (!h_wnd)
     // Failed to create the window.
     return 0;
-  }
+
   return 1;
 }
 
 int kplge::WinOglApplication::destroy_window() {
-  if (!DestroyWindow(h_wnd)) {
+  if (!DestroyWindow(h_wnd))
     // Failed to destroy the window.
     return 0;
-  }
-  if (!UnregisterClass("WGL Application", h_inst)) {
+
+  if (!UnregisterClass("WGL Application", h_inst))
     // Failed to unregister the class.
     return 0;
-  }
+
   return 1;
 }
 
@@ -116,7 +109,7 @@ LRESULT CALLBACK kplge::WinOglApplication::wnd_proc(
       PostQuitMessage(0);
       break;
     case WM_SIZE:
-      //   MyReSizeGLScene(LOWORD(l_param), HIWORD(l_param));
+      // MyReSizeGLScene(LOWORD(l_param), HIWORD(l_param));
       break;
     default:
       result = DefWindowProcA(h_wnd, msg, w_param, l_param);

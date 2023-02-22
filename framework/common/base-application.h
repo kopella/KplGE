@@ -9,7 +9,9 @@ namespace kplge {
 class BaseApplication : public IApplication {
  public:
   BaseApplication() = default;
-  BaseApplication(GfxConfig& gfx_config);
+  ~BaseApplication() override = default;
+
+  explicit BaseApplication(GfxConfig& gfx_config);
 
   erroc initialize() override;
   erroc finalize() override;

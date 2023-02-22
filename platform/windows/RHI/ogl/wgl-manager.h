@@ -5,7 +5,9 @@
 namespace kplge {
 class WglManager : public OglManager {
  public:
-  WglManager(WinOglApplication* application);
+  WglManager() = default;
+  explicit WglManager(WinOglApplication* application);
+  virtual ~WglManager() = default;
 
   erroc initialize() override;
   erroc finalize() override;
@@ -13,7 +15,7 @@ class WglManager : public OglManager {
   erroc tick() override;
 
  private:
-  WinOglApplication* application;
+  WinOglApplication* p_application;
 
   HDC h_dc;
   HGLRC h_gl_rc;
@@ -22,6 +24,5 @@ class WglManager : public OglManager {
 
   int create_context() override;
   int delete_context() override;
-
 };
 }  // namespace kplge

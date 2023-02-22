@@ -22,7 +22,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/framework/interface
     ${CMAKE_SOURCE_DIR}/framework/common
     ${CMAKE_SOURCE_DIR}/framework/memory
-    ${CMAKE_SOURCE_DIR}/framework/graphics
+    ${CMAKE_SOURCE_DIR}/framework/graphic
     # utility
     ${CMAKE_SOURCE_DIR}/framework/utility/log
     ${CMAKE_SOURCE_DIR}/framework/utility/math
@@ -50,3 +50,5 @@ include_directories(
 add_subdirectory(framework)
 add_subdirectory(platform)
 add_subdirectory(program)
+add_subdirectory(test)
+
