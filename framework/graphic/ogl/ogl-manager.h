@@ -19,9 +19,9 @@ class OglManager : public GfxManager {
   /* OpenGL tool functions*/
   int draw_scene();
 
-  GLuint load_shader();   // return shader program
-  GLuint load_vertex();   // return vertex array object
-  GLuint load_texture();  //
+  GLuint load_shader();
+  GLuint load_vertex();
+  GLuint load_texture();
 
  private:
   virtual int get_functions() = 0;

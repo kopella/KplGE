@@ -40,32 +40,24 @@ int kplge::WglManager::create_context() {
 
   h_dc = GetDC(p_application->h_wnd);
   int n_pf = ChoosePixelFormat(h_dc, &des_pf);
-  if (!n_pf) {
-    error_to_console("Failed to find a suitable pixel format.");
-  }
-  if (!SetPixelFormat(h_dc, n_pf, &des_pf)) {
-    error_to_console("Failed to set the pixel format.");
-  }
+  if (!n_pf) return 0;
+
+  if (!SetPixelFormat(h_dc, n_pf, &des_pf)) return 0;
 
   h_gl_rc = wglCreateContext(h_dc);
-  if (!h_gl_rc) {
-    error_to_console("Failed to create a OpenGL rendering context.");
-  }
-  if (!wglMakeCurrent(h_dc, h_gl_rc)) {
-    error_to_console("Failed to activate the OpenGL rendering context.");
-  }
+  if (!h_gl_rc) return 0;
+
+  if (!wglMakeCurrent(h_dc, h_gl_rc)) return 0;
+
   return 1;
 }
 
 int kplge::WglManager::delete_context() {
-  if (!wglMakeCurrent(h_dc, 0)) {
-    error_to_console("Failed to detach the rendering context.");
-  }
-  if (!wglDeleteContext(h_gl_rc)) {
-    error_to_console("Failed to delete the rendering context.");
-  }
-  if (!ReleaseDC(p_application->h_wnd, h_dc)) {
-    error_to_console("Failed to release the device context.");
-  }
+  if (!wglMakeCurrent(h_dc, 0)) return 0;
+
+  if (!wglDeleteContext(h_gl_rc)) return 0;
+
+  if (!ReleaseDC(p_application->h_wnd, h_dc)) return 0;
+
   return 1;
 }

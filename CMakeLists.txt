@@ -7,48 +7,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # gfx api : empty, ogl, dx11, dx12
 set(KPLEG_GFX_API "ogl")
 
-# platform : empty, windows, linux
-if(WIN32)
-    set(KPLGE_TARGET_PLATFORM "windows")
-endif(WIN32)
-
-if(UNIX)
+# platform : windows, linux
+if(${UNIX})
     set(KPLGE_TARGET_PLATFORM "linux")
-endif(UNIX)
+elseif(${WIN32})
+    set(KPLGE_TARGET_PLATFORM "windows")
+endif()
 
-
-# framework
 include_directories(
-    ${CMAKE_SOURCE_DIR}/framework/interface
-    ${CMAKE_SOURCE_DIR}/framework/common
-    ${CMAKE_SOURCE_DIR}/framework/memory
-    ${CMAKE_SOURCE_DIR}/framework/graphic
-    # utility
-    ${CMAKE_SOURCE_DIR}/framework/utility/log
-    ${CMAKE_SOURCE_DIR}/framework/utility/math
+    "${PROJECT_SOURCE_DIR}/framework/utility/log"
+    "${PROJECT_SOURCE_DIR}/framework/utility/math"
+    "${PROJECT_SOURCE_DIR}/framework/interface"
+    "${PROJECT_SOURCE_DIR}/framework/common"
+    "${PROJECT_SOURCE_DIR}/framework/memory"
+    "${PROJECT_SOURCE_DIR}/framework/graphic"
+)
+include_directories(
+    "${PROJECT_SOURCE_DIR}/platform/${KPLGE_TARGET_PLATFORM}"
+)
+include_directories(
+    "${PROJECT_SOURCE_DIR}/external/all"
+    "${PROJECT_SOURCE_DIR}/external/${KPLGE_TARGET_PLATFORM}"
 )
 
-# platform
-include_directories(
-    ${CMAKE_SOURCE_DIR}/platform/windows
-)
-
-
-
-# external
-include_directories(
-    ${CMAKE_SOURCE_DIR}/external/all
-)
-
-set(KPLGE_EXTERNAL_ROOT "${PROJECT_SOURCE_DIR}/external/${KPLGE_TARGET_PLATFORM}")
-message(STATUS "KPLGE_EXTERNAL_ROOT: ${KPLGE_EXTERNAL_ROOT}")
-include_directories(
-    ${KPLGE_EXTERNAL_ROOT}
-)
-
-# subdirectory
 add_subdirectory(framework)
 add_subdirectory(platform)
-add_subdirectory(program)
 add_subdirectory(test)
-

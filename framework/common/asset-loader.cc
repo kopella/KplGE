@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include "kpl-config.h"
 #include "kpl-log.h"
 
 #include "asset-loader.h"

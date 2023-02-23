@@ -1,8 +1,6 @@
 #pragma once
-#include <stdint.h>
-#include <vcruntime.h>
-#include <string>
 #include <vector>
+#include <string>
 
 #include "runtime-module.h"
 #include "buffer.h"
