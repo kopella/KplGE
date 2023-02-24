@@ -1,23 +1,24 @@
 #pragma once
-#include <cmath>
 #include <cassert>
-#include <array>
+#include <cmath>
+#include <cstring>
+
 #include <iostream>
 #include <initializer_list>
 
-#include "kpl-math.h"
+#include "utils.h"
 
 namespace kplge {
 template <typename T, size_t N>
 struct VectorMC {  // Vector for mathematical calculations
-  std::array<T, N> data{};
+  T data[N];
 
-  VectorMC<T, N>() {}
+  VectorMC<T, N>() { std::memset(data, 0x00, sizeof(T) * N); }
   VectorMC<T, N>(T value) {
     for (size_t i = 0; i < N; ++i) data[i] = value;
   }
   VectorMC<T, N>(std::initializer_list<const T> list) : VectorMC() {
-    assert(list.size() == N);
+    assert(list.size() <= N);
     size_t i = 0;
     for (auto value : list) data[i++] = value;
   }
@@ -133,7 +134,7 @@ inline void vector_abs(const VectorMC<T, N>& vin, VectorMC<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::abs_foreach(vin, vout, N);
 #else
-  kplge::abs_foreach(vin_a, vin_b, vout, N);
+  kplge::abs_foreach(vin, vout, N);
 #endif
 }
 
@@ -142,7 +143,7 @@ inline void vector_sqrt(const VectorMC<T, N>& vin, VectorMC<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::sqrt_foreach(vin, vout, N);
 #else
-  kplge::sqrt_foreach(vin_a, vin_b, vout, N);
+  kplge::sqrt_foreach(vin, vout, N);
 #endif
 }
 
@@ -151,9 +152,9 @@ inline void vector_cross(
     const VectorMC<T, 3>& vin_a, const VectorMC<T, 3>& vin_b,
     VectorMC<T, 3>& vout) {
 #ifdef ENABLE_ISPC
-  ispc::cross_product(vin_a, vin_b, vout);
+  ispc::cross(vin_a, vin_b, vout);
 #else
-  kplge::cross_product(vin_a, vin_b, vout);
+  kplge::cross(vin_a, vin_b, vout);
 #endif
 }
 
@@ -162,21 +163,21 @@ inline void vector_cross(
 /* + */
 
 template <typename T, size_t N>
-VectorMC<T, N> operator+(const VectorMC<T, N> lhs, const VectorMC<T, N> rhs) {
+VectorMC<T, N> operator+(const VectorMC<T, N>& lhs, const VectorMC<T, N>& rhs) {
   VectorMC<T, N> res;
   vector_add(lhs, rhs, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorMC<T, N> operator+(const VectorMC<T, N> lhs, const T scalar) {
+VectorMC<T, N> operator+(const VectorMC<T, N>& lhs, const T scalar) {
   VectorMC<T, N> res(scalar);
   vector_add(lhs, res, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorMC<T, N> operator+(const T scalar, const VectorMC<T, N> rhs) {
+VectorMC<T, N> operator+(const T scalar, const VectorMC<T, N>& rhs) {
   VectorMC<T, N> res(scalar);
   vector_add(res, rhs, res);
   return res;
@@ -185,21 +186,21 @@ VectorMC<T, N> operator+(const T scalar, const VectorMC<T, N> rhs) {
 /* - */
 
 template <typename T, size_t N>
-VectorMC<T, N> operator-(const VectorMC<T, N> lhs, const VectorMC<T, N> rhs) {
+VectorMC<T, N> operator-(const VectorMC<T, N>& lhs, const VectorMC<T, N>& rhs) {
   VectorMC<T, N> res;
   vector_sub(lhs, rhs, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorMC<T, N> operator-(const VectorMC<T, N> lhs, const T scalar) {
+VectorMC<T, N> operator-(const VectorMC<T, N>& lhs, const T scalar) {
   VectorMC<T, N> res(scalar);
   vector_sub(lhs, res, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorMC<T, N> operator-(const T scalar, const VectorMC<T, N> rhs) {
+VectorMC<T, N> operator-(const T scalar, const VectorMC<T, N>& rhs) {
   VectorMC<T, N> res(scalar);
   vector_sub(res, rhs, res);
   return res;
@@ -208,21 +209,21 @@ VectorMC<T, N> operator-(const T scalar, const VectorMC<T, N> rhs) {
 /* * */
 
 template <typename T, size_t N>
-VectorMC<T, N> operator*(const VectorMC<T, N> lhs, const VectorMC<T, N> rhs) {
+VectorMC<T, N> operator*(const VectorMC<T, N>& lhs, const VectorMC<T, N>& rhs) {
   VectorMC<T, N> res;
   vector_mul(lhs, rhs, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorMC<T, N> operator*(const VectorMC<T, N> lhs, const T scalar) {
+VectorMC<T, N> operator*(const VectorMC<T, N>& lhs, const T scalar) {
   VectorMC<T, N> res(scalar);
   vector_mul(lhs, res, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorMC<T, N> operator*(const T scalar, const VectorMC<T, N> rhs) {
+VectorMC<T, N> operator*(const T scalar, const VectorMC<T, N>& rhs) {
   VectorMC<T, N> res(scalar);
   vector_mul(res, rhs, res);
   return res;
@@ -231,21 +232,21 @@ VectorMC<T, N> operator*(const T scalar, const VectorMC<T, N> rhs) {
 /* / */
 
 template <typename T, size_t N>
-VectorMC<T, N> operator/(const VectorMC<T, N> lhs, const VectorMC<T, N> rhs) {
+VectorMC<T, N> operator/(const VectorMC<T, N>& lhs, const VectorMC<T, N>& rhs) {
   VectorMC<T, N> res;
   vector_div(lhs, rhs, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorMC<T, N> operator/(const VectorMC<T, N> lhs, const T scalar) {
+VectorMC<T, N> operator/(const VectorMC<T, N>& lhs, const T scalar) {
   VectorMC<T, N> res(scalar);
   vector_div(lhs, res, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorMC<T, N> operator/(const T scalar, const VectorMC<T, N> rhs) {
+VectorMC<T, N> operator/(const T scalar, const VectorMC<T, N>& rhs) {
   VectorMC<T, N> res(scalar);
   vector_div(res, rhs, res);
   return res;
@@ -254,7 +255,7 @@ VectorMC<T, N> operator/(const T scalar, const VectorMC<T, N> rhs) {
 /* free functions */
 
 template <typename T, size_t N>
-VectorMC<T, N> abs(const VectorMC<T, N> vec) {
+VectorMC<T, N> abs(const VectorMC<T, N>& vec) {
   VectorMC<T, N> res;
   vector_abs(vec, res);
   return res;
@@ -296,15 +297,15 @@ VectorMC<T, N> normalize(const VectorMC<T, N>& vec) {
 
 template <typename T, size_t N>
 std::istream& operator>>(std::istream& in, VectorMC<T, N>& vec) {
-  in >> vec.data[0];
-  for (size_t i = 1; i < N; ++i) in >> vec.data[i];
+  for (size_t i = 0; i < N; ++i) in >> vec.data[i];
   return in;
 }
 
 template <typename T, size_t N>
 std::ostream& operator<<(std::ostream& out, const VectorMC<T, N>& vec) {
-  out << vec.data[0];
-  for (size_t i = 1; i < N; ++i) out << ", " << vec.data[i];
+  out << "( ";
+  for (size_t i = 0; i < N; ++i) out << vec.data[i] << (i != N - 1 ? ", " : "");
+  out << " )";
   return out;
 }
 

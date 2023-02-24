@@ -1,4 +1,4 @@
-export void cross_product(
+export void cross(
     uniform const float vf3in_a[3], uniform const float v3fin_b[3], uniform float v3fout[3]){
 	foreach(index = 0 ... 3) {
 		int index_a = ((index + 1 == 3) ? 0 : index + 1);
