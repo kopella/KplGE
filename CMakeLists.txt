@@ -14,6 +14,8 @@ elseif(${WIN32})
     set(KPLGE_TARGET_PLATFORM "windows")
 endif()
 
+option(ENABLE_ISPC ON)
+
 include_directories(
     "${PROJECT_SOURCE_DIR}/framework/utility/log"
     "${PROJECT_SOURCE_DIR}/framework/utility/math"

@@ -5,9 +5,10 @@
 
 #include <cstdio>
 
+using namespace kplge;
+
 int main() {
-  kplge::WinOglApplication* win_ogl_application =
-      new kplge::WinOglApplication();
+  WinOglApplication* win_ogl_application = new WinOglApplication();
 
   erroc code = KPL_NO_ERR;
 

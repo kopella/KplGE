@@ -1,6 +1,8 @@
 #pragma once
+#include <cmath>
+#include <cassert>
 #include <array>
-#include <istream>
+#include <iostream>
 #include <initializer_list>
 
 #include "kpl-math.h"
@@ -28,11 +30,19 @@ struct VectorMC {  // Vector for mathematical calculations
     for (size_t i = 0; i < N; ++i) data[i] = (T)source[i];
   }
 
+  T& operator[](size_t index) { return data[index]; }
+
   operator T*() { return reinterpret_cast<T*>(this); };
+
   operator const T*() const { return reinterpret_cast<const T*>(this); }
 
   VectorMC<T, N>& operator+=(const VectorMC<T, N>& lhs) {
     *this = *this + lhs;
+    return *this;
+  }
+
+  VectorMC<T, N>& operator+=(const T scalar) {
+    *this = *this + scalar;
     return *this;
   }
 
@@ -41,8 +51,18 @@ struct VectorMC {  // Vector for mathematical calculations
     return *this;
   }
 
+  VectorMC<T, N>& operator-=(const T scalar) {
+    *this = *this - scalar;
+    return *this;
+  }
+
   VectorMC<T, N>& operator*=(const VectorMC<T, N>& lhs) {
     *this = *this * lhs;
+    return *this;
+  }
+
+  VectorMC<T, N>& operator*=(const T scalar) {
+    *this = *this * scalar;
     return *this;
   }
 
@@ -57,9 +77,12 @@ struct VectorMC {  // Vector for mathematical calculations
   }
 };
 
-/* operators */
+/* type defines */
 
-/* + */
+using Vector2f = VectorMC<float, 2>;
+using Vector3f = VectorMC<float, 3>;
+
+/* inline functions */
 
 template <typename T, size_t N>
 inline void vector_add(
@@ -71,6 +94,72 @@ inline void vector_add(
   kplge::add_foreach(vin_a, vin_b, vout, N);
 #endif
 }
+
+template <typename T, size_t N>
+inline void vector_sub(
+    const VectorMC<T, N>& vin_a, const VectorMC<T, N>& vin_b,
+    VectorMC<T, N>& vout) {
+#ifdef ENABLE_ISPC
+  ispc::sub_foreach(vin_a, vin_b, vout, N);
+#else
+  kplge::sub_foreach(vin_a, vin_b, vout, N);
+#endif
+}
+
+template <typename T, size_t N>
+inline void vector_mul(
+    const VectorMC<T, N>& vin_a, const VectorMC<T, N>& vin_b,
+    VectorMC<T, N>& vout) {
+#ifdef ENABLE_ISPC
+  ispc::mul_foreach(vin_a, vin_b, vout, N);
+#else
+  kplge::mul_foreach(vin_a, vin_b, vout, N);
+#endif
+}
+
+template <typename T, size_t N>
+inline void vector_div(
+    const VectorMC<T, N>& vin_a, const VectorMC<T, N>& vin_b,
+    VectorMC<T, N>& vout) {
+#ifdef ENABLE_ISPC
+  ispc::div_foreach(vin_a, vin_b, vout, N);
+#else
+  kplge::div_foreach(vin_a, vin_b, vout, N);
+#endif
+}
+
+template <typename T, size_t N>
+inline void vector_abs(const VectorMC<T, N>& vin, VectorMC<T, N>& vout) {
+#ifdef ENABLE_ISPC
+  ispc::abs_foreach(vin, vout, N);
+#else
+  kplge::abs_foreach(vin_a, vin_b, vout, N);
+#endif
+}
+
+template <typename T, size_t N>
+inline void vector_sqrt(const VectorMC<T, N>& vin, VectorMC<T, N>& vout) {
+#ifdef ENABLE_ISPC
+  ispc::sqrt_foreach(vin, vout, N);
+#else
+  kplge::sqrt_foreach(vin_a, vin_b, vout, N);
+#endif
+}
+
+template <typename T>
+inline void vector_cross(
+    const VectorMC<T, 3>& vin_a, const VectorMC<T, 3>& vin_b,
+    VectorMC<T, 3>& vout) {
+#ifdef ENABLE_ISPC
+  ispc::cross_product(vin_a, vin_b, vout);
+#else
+  kplge::cross_product(vin_a, vin_b, vout);
+#endif
+}
+
+/* operators */
+
+/* + */
 
 template <typename T, size_t N>
 VectorMC<T, N> operator+(const VectorMC<T, N> lhs, const VectorMC<T, N> rhs) {
@@ -96,17 +185,6 @@ VectorMC<T, N> operator+(const T scalar, const VectorMC<T, N> rhs) {
 /* - */
 
 template <typename T, size_t N>
-inline void vector_sub(
-    const VectorMC<T, N>& vin_a, const VectorMC<T, N>& vin_b,
-    VectorMC<T, N>& vout) {
-#ifdef ENABLE_ISPC
-  ispc::sub_foreach(vin_a, vin_b, vout, N);
-#else
-  kplge::sub_foreach(vin_a, vin_b, vout, N);
-#endif
-}
-
-template <typename T, size_t N>
 VectorMC<T, N> operator-(const VectorMC<T, N> lhs, const VectorMC<T, N> rhs) {
   VectorMC<T, N> res;
   vector_sub(lhs, rhs, res);
@@ -128,17 +206,6 @@ VectorMC<T, N> operator-(const T scalar, const VectorMC<T, N> rhs) {
 }
 
 /* * */
-
-template <typename T, size_t N>
-inline void vector_mul(
-    const VectorMC<T, N>& vin_a, const VectorMC<T, N>& vin_b,
-    VectorMC<T, N>& vout) {
-#ifdef ENABLE_ISPC
-  ispc::mul_foreach(vin_a, vin_b, vout, N);
-#else
-  kplge::mul_foreach(vin_a, vin_b, vout, N);
-#endif
-}
 
 template <typename T, size_t N>
 VectorMC<T, N> operator*(const VectorMC<T, N> lhs, const VectorMC<T, N> rhs) {
@@ -164,17 +231,6 @@ VectorMC<T, N> operator*(const T scalar, const VectorMC<T, N> rhs) {
 /* / */
 
 template <typename T, size_t N>
-inline void vector_div(
-    const VectorMC<T, N>& vin_a, const VectorMC<T, N>& vin_b,
-    VectorMC<T, N>& vout) {
-#ifdef ENABLE_ISPC
-  ispc::div_foreach(vin_a, vin_b, vout, N);
-#else
-  kplge::div_foreach(vin_a, vin_b, vout, N);
-#endif
-}
-
-template <typename T, size_t N>
 VectorMC<T, N> operator/(const VectorMC<T, N> lhs, const VectorMC<T, N> rhs) {
   VectorMC<T, N> res;
   vector_div(lhs, rhs, res);
@@ -198,28 +254,58 @@ VectorMC<T, N> operator/(const T scalar, const VectorMC<T, N> rhs) {
 /* free functions */
 
 template <typename T, size_t N>
-T dot(const VectorMC<T, N> lhs, const VectorMC<T, N> rhs) {
-  T res = (T)0;
+VectorMC<T, N> abs(const VectorMC<T, N> vec) {
+  VectorMC<T, N> res;
+  vector_abs(vec, res);
+  return res;
+}
+
+template <typename T, size_t N>
+T dot(const VectorMC<T, N>& lhs, const VectorMC<T, N>& rhs) {
   VectorMC<T, N> tmp = lhs * rhs;
-  for (size_t i = 0; i < N; ++i) {
+  T res = tmp[0];
+  for (size_t i = 1; i < N; ++i) {
     res += tmp[i];
   }
+  return res;
+}
+
+template <typename T>
+T cross(const VectorMC<T, 2>& lhs, const VectorMC<T, 2>& rhs) {
+  return lhs.v[0] * rhs.v[1] - lhs.v[1] * rhs.v[0];
+}
+
+template <typename T>
+VectorMC<T, 3> cross(const VectorMC<T, 3>& lhs, const VectorMC<T, 3>& rhs) {
+  VectorMC<T, 3> res;
+  vector_cross(lhs, rhs, res);
+  return res;
+}
+
+template <typename T, size_t N>
+T length(const VectorMC<T, N>& vec) {
+  return (T)std::sqrt(dot(vec, vec));
+}
+
+template <typename T, size_t N>
+VectorMC<T, N> normalize(const VectorMC<T, N>& vec) {
+  return vec / length(vec);
 }
 
 /* stream */
 
 template <typename T, size_t N>
-std::ostream& operator<<(std::ostream& out, const VectorMC<T, N>& v) {
-  out << v.v[0];
-  for (size_t i = 1; i < N; ++i) out << ", " << v.v[i];
-  return out;
+std::istream& operator>>(std::istream& in, VectorMC<T, N>& vec) {
+  in >> vec.data[0];
+  for (size_t i = 1; i < N; ++i) in >> vec.data[i];
+  return in;
 }
 
 template <typename T, size_t N>
-std::istream& operator>>(std::istream& in, VectorMC<T, N>& v) {
-  in >> v.v[0];
-  for (size_t i = 1; i < N; ++i) in >> v.v[i];
-  return in;
+std::ostream& operator<<(std::ostream& out, const VectorMC<T, N>& vec) {
+  out << vec.data[0];
+  for (size_t i = 1; i < N; ++i) out << ", " << vec.data[i];
+  return out;
 }
 
 }  // namespace kplge

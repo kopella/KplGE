@@ -4,10 +4,12 @@
 #include "asset-loader.h"
 #include "buffer.h"
 
-int main() {
-  kplge::AssetLoader assetLoader;
+using namespace kplge;
 
-  kplge::Buffer buffer = assetLoader.sync_load_text("shader/f_shader.glsl");
+int main() {
+  AssetLoader assetLoader;
+
+  Buffer buffer = assetLoader.sync_load_text("shader/f_shader.glsl");
   std::string test_res{reinterpret_cast<char*>(buffer.get_data())};
 
   std::cout << "Asset loader test result: \n" << test_res << std::endl;
