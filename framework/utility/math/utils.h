@@ -12,21 +12,16 @@ extern "C" {
 
 extern void add_foreach(
     const float* vfin_a, const float* vfin_b, float* vfout, const size_t count);
-
 extern void sub_foreach(
     const float* vfin_a, const float* vfin_b, float* vfout, const size_t count);
-
 extern void mul_foreach(
     const float* vfin_a, const float* vfin_b, float* vfout, const size_t count);
-
 extern void div_foreach(
     const float* vfin_a, const float* vfin_b, float* vfout, const size_t count);
-
 extern void pow_foreach(
     const float* vfin_a, const float* vfin_b, float* vfout, const size_t count);
 
 extern void abs_foreach(const float* vfin, float* vfout, const size_t count);
-
 extern void sqrt_foreach(const float* vfin, float* vfout, const size_t count);
 
 /* vector */

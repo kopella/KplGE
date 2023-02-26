@@ -3,17 +3,10 @@
 
 #include "constants.h"
 #include "kpl-guid.h"
+#include "scene-type.h"
 
 namespace kplge {
-enum SceneObjectType {
-  TYPE_VERTEX = 0,
-  TYPE_INDEX,
-  TYPE_MESH,
-  TYPE_MATERIAL,
-};
-
-std::ostream& operator<<(std::ostream& out, const SceneObjectType type);
-
+  
 class SceneObject {
  public:
   SceneObject() = delete;
@@ -37,11 +30,6 @@ class SceneObject {
   virtual ~SceneObject() = default;
 
  public:
-  friend std::ostream& operator<<(std::ostream& out, const SceneObject& obj) {
-    out << std::endl;
-    out << "Scene Object: " << obj.type_ << std::endl
-        << "- Guid: " << obj.guid_ << std::endl;
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const SceneObject& obj);
 };
 }  // namespace kplge
