@@ -5,11 +5,11 @@
 #include "asset-loader.h"
 #include "buffer.h"
 
-erroc kplge::AssetLoader::initialize() { return KPL_NO_ERR; }
+kplge::erroc kplge::AssetLoader::initialize() { return KPL_NO_ERR; }
 
-erroc kplge::AssetLoader::finalize() { return KPL_NO_ERR; }
+kplge::erroc kplge::AssetLoader::finalize() { return KPL_NO_ERR; }
 
-erroc kplge::AssetLoader::tick() { return KPL_NO_ERR; }
+kplge::erroc kplge::AssetLoader::tick() { return KPL_NO_ERR; }
 
 void kplge::AssetLoader::clear_search_paths() { m_search_paths.clear(); }
 

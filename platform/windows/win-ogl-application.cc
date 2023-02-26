@@ -2,7 +2,7 @@
 #include "base-application.h"
 #include "win-ogl-application.h"
 
-erroc kplge::WinOglApplication::initialize() {
+kplge::erroc kplge::WinOglApplication::initialize() {
   BaseApplication::initialize();
   if (!create_window()) {
     return WIN_ERR_CWND;
@@ -10,15 +10,15 @@ erroc kplge::WinOglApplication::initialize() {
   gfx_manager = new kplge::WglManager(this);
 
   // initialize graphics manager
-  erroc code = gfx_manager->initialize();
+  kplge::erroc code = gfx_manager->initialize();
   if (code != KPL_NO_ERR) return code;
 
   return KPL_NO_ERR;
 }
 
-erroc kplge::WinOglApplication::finalize() {
+kplge::erroc kplge::WinOglApplication::finalize() {
   // finalize graphics manager
-  erroc code = gfx_manager->finalize();
+  kplge::erroc code = gfx_manager->finalize();
   if (code != KPL_NO_ERR) return code;
   delete gfx_manager;
 
@@ -28,7 +28,7 @@ erroc kplge::WinOglApplication::finalize() {
   return KPL_NO_ERR;
 }
 
-erroc kplge::WinOglApplication::tick() {
+kplge::erroc kplge::WinOglApplication::tick() {
   BaseApplication::tick();
   MSG msg;
   if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
@@ -41,13 +41,13 @@ erroc kplge::WinOglApplication::tick() {
     }
   }
 
-  erroc code = gfx_manager->tick();
+  kplge::erroc code = gfx_manager->tick();
   if (code != KPL_NO_ERR) return code;
 
   return KPL_NO_ERR;
 }
 
-erroc kplge::WinOglApplication::show_window() {
+kplge::erroc kplge::WinOglApplication::show_window() {
   ShowWindow(h_wnd, SW_SHOW);
   UpdateWindow(h_wnd);
   return KPL_NO_ERR;

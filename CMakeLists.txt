@@ -19,6 +19,7 @@ option(ENABLE_ISPC ON)
 include_directories(
     "${PROJECT_SOURCE_DIR}/framework/utility/log"
     "${PROJECT_SOURCE_DIR}/framework/utility/math"
+    "${PROJECT_SOURCE_DIR}/framework/utility/guid"
     "${PROJECT_SOURCE_DIR}/framework/interface"
     "${PROJECT_SOURCE_DIR}/framework/common"
     "${PROJECT_SOURCE_DIR}/framework/memory"

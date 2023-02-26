@@ -4,7 +4,7 @@
 #include <cstdio>
 
 #include "kpl-config.h"
-#include "kpl-define.h"
+#include "constants.h"
 
 #ifdef KPL_DEBUG
 #define runtime_info runtime_info_toc

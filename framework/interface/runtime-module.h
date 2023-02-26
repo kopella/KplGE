@@ -1,6 +1,6 @@
 #pragma once
 #include "kpl-config.h"
-#include "kpl-define.h"
+#include "constants.h"
 
 namespace kplge {
 class IRuntimeModule {

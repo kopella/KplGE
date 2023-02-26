@@ -1,4 +1,4 @@
-set(FRAMEWORK_TEST_CASES math-test asset-loader-test)
+set(FRAMEWORK_TEST_CASES kpl-math-test kpl-guid-test asset-loader-test)
 
 foreach(TEST_CASE IN LISTS FRAMEWORK_TEST_CASES)
     add_executable(${TEST_CASE} ${TEST_CASE}.cc)

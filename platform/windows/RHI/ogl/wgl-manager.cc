@@ -7,18 +7,18 @@ kplge::WglManager::WglManager(WinOglApplication* application) {
   this->p_application = application;
 }
 
-erroc kplge::WglManager::initialize() {
+kplge::erroc kplge::WglManager::initialize() {
   if (!create_context()) return GFX_ERR_INIT;
   if (!get_functions()) return GFX_ERR_INIT;
   return KPL_NO_ERR;
 }
 
-erroc kplge::WglManager::finalize() {
+kplge::erroc kplge::WglManager::finalize() {
   if (!delete_context()) return GFX_ERR_FINA;
   return KPL_NO_ERR;
 }
 
-erroc kplge::WglManager::tick() {
+kplge::erroc kplge::WglManager::tick() {
   if (!draw_scene()) return GFX_ERR_RUNT;
   SwapBuffers(h_dc);
   return KPL_NO_ERR;

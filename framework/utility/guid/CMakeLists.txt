@@ -1,0 +1,1 @@
+add_library(kpl-guid STATIC kpl-guid.cc)
