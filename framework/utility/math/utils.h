@@ -1,12 +1,12 @@
 #pragma once
 #include "kpl-config.h"
-#include "kpl-define.h"
+#include "constants.h"
 
+namespace kplge {
 #ifdef ENABLE_ISPC
 namespace ispc {
 extern "C" {
-#else
-namespace kplge {
+
 #endif
 /* basic */
 
@@ -42,6 +42,5 @@ extern void transpose(
 #ifdef ENABLE_ISPC
 }
 }  // namespace ispc
-#else
-}  // namespace kplge
 #endif
+}  // namespace kplge

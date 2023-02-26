@@ -13,7 +13,7 @@ template <typename T, size_t ROWS, size_t COLS>
 struct MatrixMC {  // Matrix for mathematical calculations
   VectorMC<T, COLS> data[ROWS];
 
-  MatrixMC<T, ROWS, COLS>() {}
+  MatrixMC<T, ROWS, COLS>() : data{} {}
   MatrixMC<T, ROWS, COLS>(T value) {
     for (size_t r = 0; r < ROWS; ++r) {
       for (size_t c = 0; c < COLS; ++c) {
@@ -72,7 +72,7 @@ inline void matrix_add(
 #ifdef ENABLE_ISPC
   ispc::add_foreach(min_a, min_b, mout, ROWS * COLS);
 #else
-  kplge::add_foreach(min_a, min_b, mout, ROWS * COLS);
+  add_foreach(min_a, min_b, mout, ROWS * COLS);
 #endif
 }
 
@@ -83,7 +83,7 @@ inline void matrix_sub(
 #ifdef ENABLE_ISPC
   ispc::sub_foreach(min_a, min_b, mout, ROWS * COLS);
 #else
-  kplge::sub_foreach(min_a, min_b, mout, ROWS * COLS);
+  sub_foreach(min_a, min_b, mout, ROWS * COLS);
 #endif
 }
 
@@ -94,7 +94,7 @@ inline void matrix_mul(
 #ifdef ENABLE_ISPC
   ispc::mul_foreach(min_a, min_b, mout, ROWS * COLS);
 #else
-  kplge::mul_foreach(min_a, min_b, mout, ROWS * COLS);
+  mul_foreach(min_a, min_b, mout, ROWS * COLS);
 #endif
 }
 
@@ -105,7 +105,7 @@ inline void matrix_div(
 #ifdef ENABLE_ISPC
   ispc::div_foreach(min_a, min_b, mout, ROWS * COLS);
 #else
-  kplge::div_foreach(min_a, min_b, mout, ROWS * COLS);
+  div_foreach(min_a, min_b, mout, ROWS * COLS);
 #endif
 }
 
@@ -115,7 +115,7 @@ inline void matrix_abs(
 #ifdef ENABLE_ISPC
   ispc::abs_foreach(min, mout, ROWS * COLS);
 #else
-  kplge::abs_foreach(min, min_b, mout, ROWS * COLS);
+  abs_foreach(min, min_b, mout, ROWS * COLS);
 #endif
 }
 
@@ -125,7 +125,7 @@ inline void matrix_sqrt(
 #ifdef ENABLE_ISPC
   ispc::sqrt_foreach(min, mout, ROWS * COLS);
 #else
-  kplge::sqrt_foreach(min, mout, ROWS * COLS);
+  sqrt_foreach(min, mout, ROWS * COLS);
 #endif
 }
 
@@ -135,7 +135,7 @@ inline void matrix_transpose(
 #ifdef ENABLE_ISPC
   ispc::transpose(min, mout, ROWS, COLS);
 #else
-  kplge::transpose(min, mout, ROWS, COLS);
+  transpose(min, mout, ROWS, COLS);
 #endif
 }
 

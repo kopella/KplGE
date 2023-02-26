@@ -1,8 +1,8 @@
 #pragma once
 #include <cassert>
 #include <cmath>
-#include <cstring>
 
+#include <array>
 #include <iostream>
 #include <initializer_list>
 
@@ -11,9 +11,9 @@
 namespace kplge {
 template <typename T, size_t N>
 struct VectorMC {  // Vector for mathematical calculations
-  T data[N];
+  std::array<T, N> data;
 
-  VectorMC<T, N>() { std::memset(data, 0x00, sizeof(T) * N); }
+  VectorMC<T, N>() : data{} {}
   VectorMC<T, N>(T value) {
     for (size_t i = 0; i < N; ++i) data[i] = value;
   }
@@ -92,7 +92,7 @@ inline void vector_add(
 #ifdef ENABLE_ISPC
   ispc::add_foreach(vin_a, vin_b, vout, N);
 #else
-  kplge::add_foreach(vin_a, vin_b, vout, N);
+  add_foreach(vin_a, vin_b, vout, N);
 #endif
 }
 
@@ -103,7 +103,7 @@ inline void vector_sub(
 #ifdef ENABLE_ISPC
   ispc::sub_foreach(vin_a, vin_b, vout, N);
 #else
-  kplge::sub_foreach(vin_a, vin_b, vout, N);
+  sub_foreach(vin_a, vin_b, vout, N);
 #endif
 }
 
@@ -114,7 +114,7 @@ inline void vector_mul(
 #ifdef ENABLE_ISPC
   ispc::mul_foreach(vin_a, vin_b, vout, N);
 #else
-  kplge::mul_foreach(vin_a, vin_b, vout, N);
+  mul_foreach(vin_a, vin_b, vout, N);
 #endif
 }
 
@@ -125,7 +125,7 @@ inline void vector_div(
 #ifdef ENABLE_ISPC
   ispc::div_foreach(vin_a, vin_b, vout, N);
 #else
-  kplge::div_foreach(vin_a, vin_b, vout, N);
+  div_foreach(vin_a, vin_b, vout, N);
 #endif
 }
 
@@ -134,7 +134,7 @@ inline void vector_abs(const VectorMC<T, N>& vin, VectorMC<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::abs_foreach(vin, vout, N);
 #else
-  kplge::abs_foreach(vin, vout, N);
+  abs_foreach(vin, vout, N);
 #endif
 }
 
@@ -143,7 +143,7 @@ inline void vector_sqrt(const VectorMC<T, N>& vin, VectorMC<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::sqrt_foreach(vin, vout, N);
 #else
-  kplge::sqrt_foreach(vin, vout, N);
+  sqrt_foreach(vin, vout, N);
 #endif
 }
 
@@ -154,7 +154,7 @@ inline void vector_cross(
 #ifdef ENABLE_ISPC
   ispc::cross(vin_a, vin_b, vout);
 #else
-  kplge::cross(vin_a, vin_b, vout);
+  cross(vin_a, vin_b, vout);
 #endif
 }
 
