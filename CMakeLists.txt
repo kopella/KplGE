@@ -1,11 +1,12 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(kpl-ge VERSION 0.1.0)
+cmake_minimum_required(VERSION 3.19.0)
+project(kplGE
+    VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# gfx api : empty, ogl, dx11, dx12
-set(KPLEG_GFX_API "ogl")
+# gfx api : empty, opengl, directx11, directx12
+set(KPLGE_GRAPHIC_API "opengl")
 
 # platform : windows, linux
 if(${UNIX})
@@ -14,25 +15,17 @@ elseif(${WIN32})
     set(KPLGE_TARGET_PLATFORM "windows")
 endif()
 
-option(ENABLE_ISPC ON)
+set(ENABLE_ISPC TRUE)
 
-include_directories(
-    "${PROJECT_SOURCE_DIR}/framework/utility/log"
-    "${PROJECT_SOURCE_DIR}/framework/utility/math"
-    "${PROJECT_SOURCE_DIR}/framework/utility/guid"
-    "${PROJECT_SOURCE_DIR}/framework/interface"
-    "${PROJECT_SOURCE_DIR}/framework/common"
-    "${PROJECT_SOURCE_DIR}/framework/memory"
-    "${PROJECT_SOURCE_DIR}/framework/graphic"
-)
-include_directories(
-    "${PROJECT_SOURCE_DIR}/platform/${KPLGE_TARGET_PLATFORM}"
-)
-include_directories(
-    "${PROJECT_SOURCE_DIR}/external/all"
-    "${PROJECT_SOURCE_DIR}/external/${KPLGE_TARGET_PLATFORM}"
-)
+set(KPL_CALCT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/utility/calculation-tools/include")
+set(KPL_IDGEN_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/utility/identifier-generator/include")
+set(KPL_LOGT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/utility/logging-tools/include")
 
+set(KPL_FRAMEWORK_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/framework/include")
+
+
+set(EXTERNAL_ALL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/all/include")
+
+add_subdirectory(utility)
 add_subdirectory(framework)
-add_subdirectory(platform)
 add_subdirectory(test)

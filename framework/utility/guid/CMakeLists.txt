@@ -1,1 +1,0 @@
-add_library(kpl-guid kpl-guid.cc)

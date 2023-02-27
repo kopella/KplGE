@@ -1,15 +1,8 @@
-add_subdirectory(utility/math)
-add_subdirectory(utility/guid)
-
-add_subdirectory(common)
-add_subdirectory(graphic)
-add_subdirectory(scene)
+add_subdirectory(source)
 
 add_library(framework INTERFACE)
 
 target_link_libraries(framework INTERFACE
-    kpl-math
-    kpl-guid
     common
     graphic
 )

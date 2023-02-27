@@ -1,0 +1,11 @@
+if(${KPLGE_GRAPHIC_API} MATCHES "empty")
+#
+elseif(${KPLGE_GRAPHIC_API} MATCHES "opengl")
+    add_library(graphic graphic-manager.cc opengl-manager.cc)
+    target_include_directories(graphic PRIVATE "${KPL_FRAMEWORK_INCLUDE_DIR}/graphic")
+    target_include_directories(graphic PRIVATE "${EXTERNAL_ALL_INCLUDE_DIR}/opengl")
+elseif(${KPLGE_GRAPHIC_API} MATCHES "directx11")
+elseif(${KPLGE_GRAPHIC_API} MATCHES "directx12")
+else()
+    message(FATAL_ERROR "Invalid graphic api.")
+endif()
