@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # gfx api : empty, opengl, directx11, directx12
-set(KPLGE_GRAPHIC_API "opengl")
+set(KPLGE_GRAPHIC_API "opengl") 
 
 # platform : windows, linux
 if(${UNIX})
@@ -28,4 +28,5 @@ set(EXTERNAL_ALL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/all/include")
 
 add_subdirectory(utility)
 add_subdirectory(framework)
+add_subdirectory(platform)
 add_subdirectory(test)

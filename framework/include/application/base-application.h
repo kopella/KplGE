@@ -1,9 +1,11 @@
 #pragma once
+
 #include <vector>
 
-#include "application.h"
-#include "gfx-manager.h"
-#include "gfx-config.h"
+#include "../interface/application.h"
+#include "../interface/manager.h"
+#include "graphic-config.h"
+#include "graphic-manager.h"
 
 namespace kplge {
 class BaseApplication : public IApplication {
@@ -11,23 +13,27 @@ class BaseApplication : public IApplication {
   BaseApplication() = default;
   ~BaseApplication() override = default;
 
-  explicit BaseApplication(GraphicConfig& gfx_config);
+  explicit BaseApplication(GraphicConfig& graphic_config)
+      : graphic_config_(graphic_config) {}
 
-  erroc initialize() override;
-  erroc finalize() override;
+  erroc Initialize() override;
+  erroc Finalize() override;
+  erroc Tick() override;
 
-  erroc tick() override;
+  bool CheckQuitTag() { return tag_quit_; }
 
-  bool check_quit_tag();
+  void RegisterManager(GraphicManager* manager);
+
+  GraphicManager* GetGraphicManager() { return graphic_manager_; }
 
  protected:
-  void change_quit_tag();
+  bool tag_quit_{false};
+  void ChangeQuitTag() { tag_quit_ = true; }
 
-  GfxManager* gfx_manager;
+  GraphicConfig graphic_config_;
 
- private:
-  bool quit_tag;
+  GraphicManager* graphic_manager_{};
 
-  GraphicConfig gfx_config_;
+  std::vector<IManager*> managers;
 };
 }  // namespace kplge

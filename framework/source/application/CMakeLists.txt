@@ -1,0 +1,5 @@
+add_library(application base-application.cc)
+target_include_directories(application PUBLIC "${KPL_FRAMEWORK_INCLUDE_DIR}/application")
+target_include_directories(application PUBLIC "${KPL_FRAMEWORK_INCLUDE_DIR}/common")
+target_include_directories(application PUBLIC "${KPL_FRAMEWORK_INCLUDE_DIR}/graphic")
+target_include_directories(application PUBLIC "${KPL_FRAMEWORK_INCLUDE_DIR}/scene")

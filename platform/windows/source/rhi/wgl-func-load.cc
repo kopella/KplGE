@@ -1,7 +1,6 @@
-#include "RHI/ogl/wgl-manager.h"
 #include "wgl-manager.h"
 
-int kplge::WglManager::get_functions() {
+bool kplge::WglManager::GetFunctions() {
   glCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
   if (!glCreateProgram) return 0;
   glLinkProgram = (PFNGLLINKPROGRAMPROC)wglGetProcAddress("glLinkProgram");

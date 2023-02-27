@@ -1,21 +1,23 @@
 if(${KPLGE_TARGET_PLATFORM} MATCHES "windows")
-    if(${KPLEG_GFX_API} MATCHES "ogl")
-        add_executable(windows-ogl-test
-            windows-ogl-test.cc)
-        target_link_libraries(windows-ogl-test
+    if(${KPLGE_GRAPHIC_API} MATCHES "opengl")
+        add_executable(windows-opengl-test
+            windows-opengl-test.cc)
+        target_include_directories(windows-opengl-test PRIVATE "${KPL_FRAMEWORK_INCLUDE_DIR}/application")
+        target_include_directories(windows-opengl-test PRIVATE "${KPL_LOGT_INCLUDE_DIR}")
+        target_link_libraries(windows-opengl-test
             framework
             platform
         )
-    elseif(${KPLEG_GFX_API} MATCHES "dx11")
+    elseif(${KPLGE_GRAPHIC_API} MATCHES "directx11")
         add_executable(windows-dx11-test
-            windows-ogl-test.cc)
+            windows-directx11-test.cc)
         target_link_libraries(windows-dx11-test
             framework
             platform
         )
-    elseif(${KPLEG_GFX_API} MATCHES "dx12")
+    elseif(${KPLGE_GRAPHIC_API} MATCHES "directx12")
         add_executable(windows-dx12-test
-            windows-ogl-test.cc)
+            windows-directx12-test.cc)
         target_link_libraries(windows-dx12-test
             framework
             platform
@@ -29,10 +31,10 @@ if(${KPLGE_TARGET_PLATFORM} MATCHES "windows")
         )
     endif()
 elseif(${KPLGE_TARGET_PLATFORM} MATCHES "linux")
-    if(${KPLEG_GFX_API} MATCHES "ogl")
-        add_executable(linux-ogl-test
-            linux-ogl-test.cc)
-        target_link_libraries(linux-ogl-test
+    if(${KPLGE_GRAPHIC_API} MATCHES "opengl")
+        add_executable(linux-opengl-test
+            linux-opengl-test.cc)
+        target_link_libraries(linux-opengl-test
             framework
             platform
         )

@@ -7,7 +7,11 @@
 #include <iostream>
 
 namespace kplge {
-int OpenGLManager::DrawScene() {
+erroc OpenGLManager::Initialize() { return KPL_NO_ERR; }
+erroc OpenGLManager::Finalize() { return KPL_NO_ERR; }
+erroc OpenGLManager::Tick() { return KPL_NO_ERR; }
+
+bool OpenGLManager::DrawScene() {
   glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -22,8 +26,8 @@ int OpenGLManager::DrawScene() {
 }
 
 GLuint OpenGLManager::LoadShader() {
-  const char* v_shader_path = "../../asset/shader/v_shader.glsl";
-  const char* f_shader_path = "../../asset/shader/f_shader.glsl";
+  const char* v_shader_path = "../../../asset/shader/v_shader.glsl";
+  const char* f_shader_path = "../../../asset/shader/f_shader.glsl";
 
   std::string v_shader_code;
   std::string f_shader_code;
@@ -94,4 +98,4 @@ GLuint OpenGLManager::LoadVertex() {
 
 GLuint OpenGLManager::LoadTexture() { return 0; }
 
-}
+}  // namespace kplge

@@ -16,16 +16,16 @@ class OpenGLManager : public GraphicManager {
   erroc Tick() override;
 
   /* OpenGL tool functions*/
-  int DrawScene();
+  bool DrawScene();
 
   GLuint LoadShader();
   GLuint LoadVertex();
   GLuint LoadTexture();
 
  private:
-  virtual int GetFunctions() = 0;
-  virtual int CreateContext() = 0;
-  virtual int DeleteContext() = 0;
+  virtual bool GetFunctions() = 0;
+  virtual bool CreateContext() = 0;
+  virtual bool DeleteContext() = 0;
 
  protected:
   /* OpenGL functions pointers*/
