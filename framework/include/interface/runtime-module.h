@@ -10,7 +10,6 @@ class IRuntimeModule {
 
   virtual erroc Initialize() = 0;
   virtual erroc Finalize() = 0;
-
   virtual erroc Tick() = 0;
 };
 }  // namespace kplge

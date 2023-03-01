@@ -34,6 +34,6 @@ class BaseApplication : public IApplication {
 
   GraphicManager* graphic_manager_{};
 
-  std::vector<IManager*> managers;
+  std::vector<IManager*> managers_;
 };
 }  // namespace kplge

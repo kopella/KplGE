@@ -3,9 +3,9 @@
 #include <cstdint>
 
 struct GraphicConfig {
-  uint32_t width;
-  uint32_t height;
+  uint32_t width_;
+  uint32_t height_;
 
   explicit GraphicConfig(uint32_t width = 960, uint32_t height = 540)
-      : width(width), height(height) {}
+      : width_(width), height_(height) {}
 };

@@ -8,7 +8,6 @@ class IApplication : public IRuntimeModule {
 
   erroc Initialize() override = 0;
   erroc Finalize() override = 0;
-
   erroc Tick() override = 0;
 };
 }  // namespace kplge

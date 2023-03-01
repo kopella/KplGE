@@ -10,36 +10,36 @@ kplge::erroc kplge::AssetLoader::Finalize() { return KPL_NO_ERR; }
 
 kplge::erroc kplge::AssetLoader::Tick() { return KPL_NO_ERR; }
 
-void kplge::AssetLoader::clear_search_paths() { m_search_paths.clear(); }
+void kplge::AssetLoader::ClearSearchPaths() { search_paths_.clear(); }
 
-bool kplge::AssetLoader::add_search_path(const char *path) {
-  for (auto src = m_search_paths.begin(); src != m_search_paths.end(); src++) {
+bool kplge::AssetLoader::AddSearchPath(const char *path) {
+  for (auto src = search_paths_.begin(); src != search_paths_.end(); src++) {
     if (*src == path) {
       return true;
     }
   }
-  m_search_paths.emplace_back(path);
+  search_paths_.emplace_back(path);
   return true;
 }
 
-bool kplge::AssetLoader::remove_search_path(const char *path) {
-  for (auto src = m_search_paths.begin(); src != m_search_paths.end(); src++) {
+bool kplge::AssetLoader::RemoveSearchPath(const char *path) {
+  for (auto src = search_paths_.begin(); src != search_paths_.end(); src++) {
     if (*src == path) {
-      m_search_paths.erase(src);
+      search_paths_.erase(src);
       return true;
     }
   }
   return true;
 }
 
-kplge::Buffer kplge::AssetLoader::sync_load_text(const char *path) {
+kplge::Buffer kplge::AssetLoader::SyncLoadText(const char *path) {
   file_p fp{};
   Buffer buffer;
 
-  if (!open_file(fp, path, KPL_OPEN_TEXT)) {
+  if (!OpenFile(fp, path, KPL_OPEN_TEXT)) {
     runtime_info("Can't open file '%s'", path);
   } else {
-    size_t length = get_file_size(fp);
+    size_t length = GetFileSize(fp);
 
     uint8_t *data = new uint8_t[length + 1];
     fread(data, length, 1, static_cast<FILE *>(fp));
@@ -49,36 +49,36 @@ kplge::Buffer kplge::AssetLoader::sync_load_text(const char *path) {
     data[length] = '\0';
     buffer.set_data(data, length + 1);
 
-    colse_file(fp);
+    ColseFile(fp);
   }
   return buffer;
 }
 
-kplge::Buffer kplge::AssetLoader::sync_load_binary(const char *path) {
+kplge::Buffer kplge::AssetLoader::SyncLoadBinary(const char *path) {
   file_p fp{};
   Buffer buffer{};
 
-  if (!open_file(fp, path, KPL_OPEN_BINARY)) {
+  if (!OpenFile(fp, path, KPL_OPEN_BINARY)) {
     runtime_info("Can't open file '%s'", path);
   } else {
-    size_t length = get_file_size(fp);
+    size_t length = GetFileSize(fp);
     uint8_t *data = new uint8_t[length];
     fread(data, length, 1, static_cast<FILE *>(fp));
 
     runtime_info("Read binary file '%s', %zu bytes\n", path, length);
 
     buffer.set_data(data, length);
-    colse_file(fp);
+    ColseFile(fp);
   }
   return buffer;
 }
 
-bool kplge::AssetLoader::open_file(
+bool kplge::AssetLoader::OpenFile(
     file_p &fp, const char *path, int8_t mode, uint8_t level) {
   std::string up_path{};
   std::string full_path{};
   for (int h = 0; h < level; h++) {
-    for (std::string src : m_search_paths) {
+    for (std::string src : search_paths_) {
       full_path.assign(up_path);
       full_path.append(src);
       full_path.append(path);
@@ -97,14 +97,14 @@ bool kplge::AssetLoader::open_file(
   return 0;
 }
 
-bool kplge::AssetLoader::colse_file(file_p &fp) {
+bool kplge::AssetLoader::ColseFile(file_p &fp) {
   fclose((FILE *)fp);
   fp = nullptr;
 
   return 1;
 }
 
-size_t kplge::AssetLoader::get_file_size(file_p &fp) {
+size_t kplge::AssetLoader::GetFileSize(file_p &fp) {
   FILE *_fp = static_cast<FILE *>(fp);
 
   long pos = ftell(_fp);

@@ -10,6 +10,6 @@ erroc BaseApplication::Tick() { return KPL_NO_ERR; }
 void BaseApplication::RegisterManager(GraphicManager* manager){
     graphic_manager_ = manager;
     manager->SetAppPointer(this);
-    managers.push_back(manager);
+    managers_.push_back(manager);
 }
 }  // namespace kplge

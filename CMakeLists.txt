@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19.0)
-project(kplGE
+project(KplGE
     VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -22,7 +22,6 @@ set(KPL_IDGEN_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/utility/identifier-generator/in
 set(KPL_LOGT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/utility/logging-tools/include")
 
 set(KPL_FRAMEWORK_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/framework/include")
-
 
 set(EXTERNAL_ALL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/all/include")
 

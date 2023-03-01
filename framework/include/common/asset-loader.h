@@ -21,21 +21,21 @@ class AssetLoader : IRuntimeModule {
   erroc Tick() override;
 
   // Search paths operations
-  void clear_search_paths();
-  bool add_search_path(const char* path);
-  bool remove_search_path(const char* path);
+  void ClearSearchPaths();
+  bool AddSearchPath(const char* path);
+  bool RemoveSearchPath(const char* path);
 
   // Files operations
-  Buffer sync_load_text(const char* path);
-  Buffer sync_load_binary(const char* path);
+  Buffer SyncLoadText(const char* path);
+  Buffer SyncLoadBinary(const char* path);
 
  private:
-  std::vector<std::string> m_search_paths{"","asset/","assets/"};
+  std::vector<std::string> search_paths_{"","asset/","assets/"};
 
-  bool open_file(file_p& fp, const char* path = "", int8_t mode = KPL_OPEN_BINARY, uint8_t level = 8);
-  bool colse_file(file_p& fp);
+  bool OpenFile(file_p& fp, const char* path = "", int8_t mode = KPL_OPEN_BINARY, uint8_t level = 8);
+  bool ColseFile(file_p& fp);
 
-  size_t get_file_size(file_p& f);
+  size_t GetFileSize(file_p& f);
 };
 
 }  // namespace kplge

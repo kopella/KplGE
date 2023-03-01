@@ -5,7 +5,7 @@ erroc WindowsApplication::Initialize() {
   BaseApplication::Initialize();
   if (!CreateMainWindow()) return WIN_ERR_CWND;
 
-  for (auto manager : managers) {
+  for (auto manager : managers_) {
     erroc code = manager->Initialize();
     if (code != KPL_NO_ERR) return code;
   }
@@ -13,7 +13,7 @@ erroc WindowsApplication::Initialize() {
 }
 
 erroc WindowsApplication::Finalize() {
-  for (auto manager : managers) {
+  for (auto manager : managers_) {
     erroc code = manager->Finalize();
     if (code != KPL_NO_ERR) return code;
   }
@@ -34,7 +34,7 @@ erroc WindowsApplication::Tick() {
       DispatchMessage(&msg);
     }
   }
-  for (auto manager : managers) {
+  for (auto manager : managers_) {
     erroc code = manager->Tick();
     if (code != KPL_NO_ERR) return code;
   }
