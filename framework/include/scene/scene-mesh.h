@@ -77,7 +77,7 @@ class VertexArray {
   friend std::ostream& operator<<(std::ostream& out, const VertexArray vertex);
 };
 
-class Mesh : public SceneObject {
+class SceneMesh : public SceneObject {
  protected:
   std::vector<IndexArray> IndexArraies_;
   std::vector<VertexArray> VertexArraies_;

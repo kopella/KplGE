@@ -82,6 +82,7 @@ struct VectorGC {
 
 using Vector2f = VectorGC<float, 2>;
 using Vector3f = VectorGC<float, 3>;
+using Vector4f = VectorGC<float, 4>;
 
 /* inline functions */
 
