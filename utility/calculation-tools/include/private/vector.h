@@ -5,29 +5,46 @@
 #include <array>
 #include <iostream>
 #include <initializer_list>
+#include <iterator>
 
 #include "utils.h"
 
 namespace kplutl {
 template <typename T, size_t N>
-struct VectorGC {
-  std::array<T, N> data;
+struct VectorCT {
+  std::array<T, N> data{};
 
-  VectorGC<T, N>() : data{} {}
-  VectorGC<T, N>(T value) {
+  VectorCT<T, N>() = default;
+  VectorCT<T, N>(VectorCT<T, N>& vectorCT) = default;
+  VectorCT<T, N>& operator=(VectorCT<T, N>& matrixCT) =
+      default;
+  VectorCT<T, N>(VectorCT<T, N>&& vectorCT) = default;
+  VectorCT<T, N>& operator=(VectorCT<T, N>&& matrixCT) =
+      default;
+  VectorCT<T, N>(T value) {
     for (size_t i = 0; i < N; ++i) data[i] = value;
   }
-  VectorGC<T, N>(std::initializer_list<const T> list) : VectorGC() {
-    assert(list.size() <= N);
+  VectorCT<T, N>(std::initializer_list<const T> list) {
+    assert(list.size() == N);
     size_t i = 0;
     for (auto value : list) data[i++] = value;
   }
+  template <typename It>
+  VectorCT<T, N>(It first, It last) {
+    auto size = std::distance(first, last);
+    assert(size == N);
+    auto it = first;
+    for (size_t i = 0; i < size; ++i) {
+      data[i] = *it;
+      ++it;
+    }
+  }
   template <typename S>
-  explicit VectorGC<T, N>(const S* source) {
+  explicit VectorCT<T, N>(const S* source) {
     for (size_t i = 0; i < N; ++i) data[i] = (T)source[i];
   }
   template <typename S>
-  explicit VectorGC<T, N>(const VectorGC<S, N>& source) {
+  explicit VectorCT<T, N>(const VectorCT<S, N>& source) {
     for (size_t i = 0; i < N; ++i) data[i] = (T)source[i];
   }
 
@@ -37,42 +54,42 @@ struct VectorGC {
 
   operator const T*() const { return reinterpret_cast<const T*>(this); }
 
-  VectorGC<T, N>& operator+=(const VectorGC<T, N>& lhs) {
+  VectorCT<T, N>& operator+=(const VectorCT<T, N>& lhs) {
     *this = *this + lhs;
     return *this;
   }
 
-  VectorGC<T, N>& operator+=(const T scalar) {
+  VectorCT<T, N>& operator+=(const T scalar) {
     *this = *this + scalar;
     return *this;
   }
 
-  VectorGC<T, N>& operator-=(const VectorGC<T, N>& lhs) {
+  VectorCT<T, N>& operator-=(const VectorCT<T, N>& lhs) {
     *this = *this - lhs;
     return *this;
   }
 
-  VectorGC<T, N>& operator-=(const T scalar) {
+  VectorCT<T, N>& operator-=(const T scalar) {
     *this = *this - scalar;
     return *this;
   }
 
-  VectorGC<T, N>& operator*=(const VectorGC<T, N>& lhs) {
+  VectorCT<T, N>& operator*=(const VectorCT<T, N>& lhs) {
     *this = *this * lhs;
     return *this;
   }
 
-  VectorGC<T, N>& operator*=(const T scalar) {
+  VectorCT<T, N>& operator*=(const T scalar) {
     *this = *this * scalar;
     return *this;
   }
 
-  VectorGC<T, N>& operator/=(const VectorGC<T, N>& lhs) {
+  VectorCT<T, N>& operator/=(const VectorCT<T, N>& lhs) {
     *this = *this / lhs;
     return *this;
   }
 
-  VectorGC<T, N>& operator/=(const T scalar) {
+  VectorCT<T, N>& operator/=(const T scalar) {
     *this = *this / scalar;
     return *this;
   }
@@ -80,16 +97,16 @@ struct VectorGC {
 
 /* type defines */
 
-using Vector2f = VectorGC<float, 2>;
-using Vector3f = VectorGC<float, 3>;
-using Vector4f = VectorGC<float, 4>;
+using Vector2f = VectorCT<float, 2>;
+using Vector3f = VectorCT<float, 3>;
+using Vector4f = VectorCT<float, 4>;
 
 /* inline functions */
 
 template <typename T, size_t N>
 inline void vector_add(
-    const VectorGC<T, N>& vin_a, const VectorGC<T, N>& vin_b,
-    VectorGC<T, N>& vout) {
+    const VectorCT<T, N>& vin_a, const VectorCT<T, N>& vin_b,
+    VectorCT<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::add_foreach(vin_a, vin_b, vout, N);
 #else
@@ -99,8 +116,8 @@ inline void vector_add(
 
 template <typename T, size_t N>
 inline void vector_sub(
-    const VectorGC<T, N>& vin_a, const VectorGC<T, N>& vin_b,
-    VectorGC<T, N>& vout) {
+    const VectorCT<T, N>& vin_a, const VectorCT<T, N>& vin_b,
+    VectorCT<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::sub_foreach(vin_a, vin_b, vout, N);
 #else
@@ -110,8 +127,8 @@ inline void vector_sub(
 
 template <typename T, size_t N>
 inline void vector_mul(
-    const VectorGC<T, N>& vin_a, const VectorGC<T, N>& vin_b,
-    VectorGC<T, N>& vout) {
+    const VectorCT<T, N>& vin_a, const VectorCT<T, N>& vin_b,
+    VectorCT<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::mul_foreach(vin_a, vin_b, vout, N);
 #else
@@ -121,8 +138,8 @@ inline void vector_mul(
 
 template <typename T, size_t N>
 inline void vector_div(
-    const VectorGC<T, N>& vin_a, const VectorGC<T, N>& vin_b,
-    VectorGC<T, N>& vout) {
+    const VectorCT<T, N>& vin_a, const VectorCT<T, N>& vin_b,
+    VectorCT<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::div_foreach(vin_a, vin_b, vout, N);
 #else
@@ -131,7 +148,7 @@ inline void vector_div(
 }
 
 template <typename T, size_t N>
-inline void vector_abs(const VectorGC<T, N>& vin, VectorGC<T, N>& vout) {
+inline void vector_abs(const VectorCT<T, N>& vin, VectorCT<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::abs_foreach(vin, vout, N);
 #else
@@ -140,7 +157,7 @@ inline void vector_abs(const VectorGC<T, N>& vin, VectorGC<T, N>& vout) {
 }
 
 template <typename T, size_t N>
-inline void vector_sqrt(const VectorGC<T, N>& vin, VectorGC<T, N>& vout) {
+inline void vector_sqrt(const VectorCT<T, N>& vin, VectorCT<T, N>& vout) {
 #ifdef ENABLE_ISPC
   ispc::sqrt_foreach(vin, vout, N);
 #else
@@ -150,8 +167,8 @@ inline void vector_sqrt(const VectorGC<T, N>& vin, VectorGC<T, N>& vout) {
 
 template <typename T>
 inline void vector_cross(
-    const VectorGC<T, 3>& vin_a, const VectorGC<T, 3>& vin_b,
-    VectorGC<T, 3>& vout) {
+    const VectorCT<T, 3>& vin_a, const VectorCT<T, 3>& vin_b,
+    VectorCT<T, 3>& vout) {
 #ifdef ENABLE_ISPC
   ispc::cross(vin_a, vin_b, vout);
 #else
@@ -164,22 +181,22 @@ inline void vector_cross(
 /* + */
 
 template <typename T, size_t N>
-VectorGC<T, N> operator+(const VectorGC<T, N>& lhs, const VectorGC<T, N>& rhs) {
-  VectorGC<T, N> res;
+VectorCT<T, N> operator+(const VectorCT<T, N>& lhs, const VectorCT<T, N>& rhs) {
+  VectorCT<T, N> res;
   vector_add(lhs, rhs, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorGC<T, N> operator+(const VectorGC<T, N>& lhs, const T scalar) {
-  VectorGC<T, N> res(scalar);
+VectorCT<T, N> operator+(const VectorCT<T, N>& lhs, const T scalar) {
+  VectorCT<T, N> res(scalar);
   vector_add(lhs, res, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorGC<T, N> operator+(const T scalar, const VectorGC<T, N>& rhs) {
-  VectorGC<T, N> res(scalar);
+VectorCT<T, N> operator+(const T scalar, const VectorCT<T, N>& rhs) {
+  VectorCT<T, N> res(scalar);
   vector_add(res, rhs, res);
   return res;
 }
@@ -187,22 +204,22 @@ VectorGC<T, N> operator+(const T scalar, const VectorGC<T, N>& rhs) {
 /* - */
 
 template <typename T, size_t N>
-VectorGC<T, N> operator-(const VectorGC<T, N>& lhs, const VectorGC<T, N>& rhs) {
-  VectorGC<T, N> res;
+VectorCT<T, N> operator-(const VectorCT<T, N>& lhs, const VectorCT<T, N>& rhs) {
+  VectorCT<T, N> res;
   vector_sub(lhs, rhs, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorGC<T, N> operator-(const VectorGC<T, N>& lhs, const T scalar) {
-  VectorGC<T, N> res(scalar);
+VectorCT<T, N> operator-(const VectorCT<T, N>& lhs, const T scalar) {
+  VectorCT<T, N> res(scalar);
   vector_sub(lhs, res, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorGC<T, N> operator-(const T scalar, const VectorGC<T, N>& rhs) {
-  VectorGC<T, N> res(scalar);
+VectorCT<T, N> operator-(const T scalar, const VectorCT<T, N>& rhs) {
+  VectorCT<T, N> res(scalar);
   vector_sub(res, rhs, res);
   return res;
 }
@@ -210,22 +227,22 @@ VectorGC<T, N> operator-(const T scalar, const VectorGC<T, N>& rhs) {
 /* * */
 
 template <typename T, size_t N>
-VectorGC<T, N> operator*(const VectorGC<T, N>& lhs, const VectorGC<T, N>& rhs) {
-  VectorGC<T, N> res;
+VectorCT<T, N> operator*(const VectorCT<T, N>& lhs, const VectorCT<T, N>& rhs) {
+  VectorCT<T, N> res;
   vector_mul(lhs, rhs, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorGC<T, N> operator*(const VectorGC<T, N>& lhs, const T scalar) {
-  VectorGC<T, N> res(scalar);
+VectorCT<T, N> operator*(const VectorCT<T, N>& lhs, const T scalar) {
+  VectorCT<T, N> res(scalar);
   vector_mul(lhs, res, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorGC<T, N> operator*(const T scalar, const VectorGC<T, N>& rhs) {
-  VectorGC<T, N> res(scalar);
+VectorCT<T, N> operator*(const T scalar, const VectorCT<T, N>& rhs) {
+  VectorCT<T, N> res(scalar);
   vector_mul(res, rhs, res);
   return res;
 }
@@ -233,22 +250,22 @@ VectorGC<T, N> operator*(const T scalar, const VectorGC<T, N>& rhs) {
 /* / */
 
 template <typename T, size_t N>
-VectorGC<T, N> operator/(const VectorGC<T, N>& lhs, const VectorGC<T, N>& rhs) {
-  VectorGC<T, N> res;
+VectorCT<T, N> operator/(const VectorCT<T, N>& lhs, const VectorCT<T, N>& rhs) {
+  VectorCT<T, N> res;
   vector_div(lhs, rhs, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorGC<T, N> operator/(const VectorGC<T, N>& lhs, const T scalar) {
-  VectorGC<T, N> res(scalar);
+VectorCT<T, N> operator/(const VectorCT<T, N>& lhs, const T scalar) {
+  VectorCT<T, N> res(scalar);
   vector_div(lhs, res, res);
   return res;
 }
 
 template <typename T, size_t N>
-VectorGC<T, N> operator/(const T scalar, const VectorGC<T, N>& rhs) {
-  VectorGC<T, N> res(scalar);
+VectorCT<T, N> operator/(const T scalar, const VectorCT<T, N>& rhs) {
+  VectorCT<T, N> res(scalar);
   vector_div(res, rhs, res);
   return res;
 }
@@ -256,15 +273,15 @@ VectorGC<T, N> operator/(const T scalar, const VectorGC<T, N>& rhs) {
 /* free functions */
 
 template <typename T, size_t N>
-VectorGC<T, N> abs(const VectorGC<T, N>& vec) {
-  VectorGC<T, N> res;
+VectorCT<T, N> abs(const VectorCT<T, N>& vec) {
+  VectorCT<T, N> res;
   vector_abs(vec, res);
   return res;
 }
 
 template <typename T, size_t N>
-T dot(const VectorGC<T, N>& lhs, const VectorGC<T, N>& rhs) {
-  VectorGC<T, N> tmp = lhs * rhs;
+T dot(const VectorCT<T, N>& lhs, const VectorCT<T, N>& rhs) {
+  VectorCT<T, N> tmp = lhs * rhs;
   T res = tmp[0];
   for (size_t i = 1; i < N; ++i) {
     res += tmp[i];
@@ -273,37 +290,37 @@ T dot(const VectorGC<T, N>& lhs, const VectorGC<T, N>& rhs) {
 }
 
 template <typename T>
-T cross(const VectorGC<T, 2>& lhs, const VectorGC<T, 2>& rhs) {
+T cross(const VectorCT<T, 2>& lhs, const VectorCT<T, 2>& rhs) {
   return lhs.v[0] * rhs.v[1] - lhs.v[1] * rhs.v[0];
 }
 
 template <typename T>
-VectorGC<T, 3> cross(const VectorGC<T, 3>& lhs, const VectorGC<T, 3>& rhs) {
-  VectorGC<T, 3> res;
+VectorCT<T, 3> cross(const VectorCT<T, 3>& lhs, const VectorCT<T, 3>& rhs) {
+  VectorCT<T, 3> res;
   vector_cross(lhs, rhs, res);
   return res;
 }
 
 template <typename T, size_t N>
-T length(const VectorGC<T, N>& vec) {
+T length(const VectorCT<T, N>& vec) {
   return (T)std::sqrt(dot(vec, vec));
 }
 
 template <typename T, size_t N>
-VectorGC<T, N> normalize(const VectorGC<T, N>& vec) {
+VectorCT<T, N> normalize(const VectorCT<T, N>& vec) {
   return vec / length(vec);
 }
 
 /* stream */
 
 template <typename T, size_t N>
-std::istream& operator>>(std::istream& in, VectorGC<T, N>& vec) {
+std::istream& operator>>(std::istream& in, VectorCT<T, N>& vec) {
   for (size_t i = 0; i < N; ++i) in >> vec.data[i];
   return in;
 }
 
 template <typename T, size_t N>
-std::ostream& operator<<(std::ostream& out, const VectorGC<T, N>& vec) {
+std::ostream& operator<<(std::ostream& out, const VectorCT<T, N>& vec) {
   out << "( ";
   for (size_t i = 0; i < N; ++i) out << vec.data[i] << (i != N - 1 ? ", " : "");
   out << " )";

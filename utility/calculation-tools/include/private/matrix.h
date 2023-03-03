@@ -10,10 +10,17 @@
 
 namespace kplutl {
 template <typename T, size_t ROWS, size_t COLS>
-struct MatrixCT { 
-  VectorGC<T, COLS> data[ROWS];
+struct MatrixCT {
+  VectorCT<T, COLS> data[ROWS];
 
-  MatrixCT<T, ROWS, COLS>() : data{} {}
+  MatrixCT<T, ROWS, COLS>() = default;
+  MatrixCT<T, ROWS, COLS>(MatrixCT<T, ROWS, COLS>& matrixCT) = default;
+  MatrixCT<T, ROWS, COLS>& operator=(MatrixCT<T, ROWS, COLS>& matrixCT) =
+      default;
+  MatrixCT<T, ROWS, COLS>(MatrixCT<T, ROWS, COLS>&& matrixCT) = default;
+  MatrixCT<T, ROWS, COLS>& operator=(MatrixCT<T, ROWS, COLS>&& matrixCT) =
+      default;
+
   MatrixCT<T, ROWS, COLS>(T value) {
     for (size_t r = 0; r < ROWS; ++r) {
       for (size_t c = 0; c < COLS; ++c) {
@@ -23,7 +30,7 @@ struct MatrixCT {
   }
   MatrixCT<T, ROWS, COLS>(
       std::initializer_list<std::initializer_list<const T>> list) {
-    assert(list.size() <= ROWS);
+    assert(list.size() == ROWS);
     size_t i = 0;
     for (auto sub_list : list) {
       assert(sub_list.size() <= COLS);
@@ -32,6 +39,18 @@ struct MatrixCT {
         data[i][j++] = value;
       }
       i++;
+    }
+  }
+  template <typename It>
+  MatrixCT<T, ROWS, COLS>(It first, It last) {
+    auto size = std::distance(first, last);
+    assert(size == ROWS * COLS);
+    auto it = first;
+    for (size_t r = 0; r < ROWS; ++r) {
+      for (size_t c = 0; c < COLS; ++c) {
+        data[r][c] = *it;
+        ++it;
+      }
     }
   }
   template <typename S>
@@ -51,7 +70,7 @@ struct MatrixCT {
     }
   }
 
-  VectorGC<T, COLS>& operator[](int row_index) { return data[row_index]; }
+  VectorCT<T, COLS>& operator[](int row_index) { return data[row_index]; }
 
   operator T*() { return &data[0][0]; };
 
@@ -283,4 +302,4 @@ std::ostream& operator<<(std::ostream& out, MatrixCT<T, ROWS, COLS>&& mat) {
   return out;
 }
 
-}  // namespace kplge
+}  // namespace kplutl
