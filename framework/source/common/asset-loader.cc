@@ -4,15 +4,14 @@
 
 #include "kpllogt.h"
 
-kplge::erroc kplge::AssetLoader::Initialize() { return KPL_NO_ERR; }
+namespace kplge {
+erroc AssetLoader::Initialize() { return KPL_NO_ERR; }
+erroc AssetLoader::Finalize() { return KPL_NO_ERR; }
+erroc AssetLoader::Tick() { return KPL_NO_ERR; }
 
-kplge::erroc kplge::AssetLoader::Finalize() { return KPL_NO_ERR; }
+void AssetLoader::ClearSearchPaths() { search_paths_.clear(); }
 
-kplge::erroc kplge::AssetLoader::Tick() { return KPL_NO_ERR; }
-
-void kplge::AssetLoader::ClearSearchPaths() { search_paths_.clear(); }
-
-bool kplge::AssetLoader::AddSearchPath(const char *path) {
+bool AssetLoader::AddSearchPath(const char *path) {
   for (auto src = search_paths_.begin(); src != search_paths_.end(); src++) {
     if (*src == path) {
       return true;
@@ -22,7 +21,7 @@ bool kplge::AssetLoader::AddSearchPath(const char *path) {
   return true;
 }
 
-bool kplge::AssetLoader::RemoveSearchPath(const char *path) {
+bool AssetLoader::RemoveSearchPath(const char *path) {
   for (auto src = search_paths_.begin(); src != search_paths_.end(); src++) {
     if (*src == path) {
       search_paths_.erase(src);
@@ -32,7 +31,7 @@ bool kplge::AssetLoader::RemoveSearchPath(const char *path) {
   return true;
 }
 
-kplge::Buffer kplge::AssetLoader::SyncLoadText(const char *path) {
+Buffer AssetLoader::SyncLoadText(const char *path) {
   file_p fp{};
   Buffer buffer;
 
@@ -54,7 +53,7 @@ kplge::Buffer kplge::AssetLoader::SyncLoadText(const char *path) {
   return buffer;
 }
 
-kplge::Buffer kplge::AssetLoader::SyncLoadBinary(const char *path) {
+Buffer AssetLoader::SyncLoadBinary(const char *path) {
   file_p fp{};
   Buffer buffer{};
 
@@ -73,7 +72,7 @@ kplge::Buffer kplge::AssetLoader::SyncLoadBinary(const char *path) {
   return buffer;
 }
 
-bool kplge::AssetLoader::OpenFile(
+bool AssetLoader::OpenFile(
     file_p &fp, const char *path, int8_t mode, uint8_t level) {
   std::string up_path{};
   std::string full_path{};
@@ -97,14 +96,14 @@ bool kplge::AssetLoader::OpenFile(
   return 0;
 }
 
-bool kplge::AssetLoader::ColseFile(file_p &fp) {
+bool AssetLoader::ColseFile(file_p &fp) {
   fclose((FILE *)fp);
   fp = nullptr;
 
   return 1;
 }
 
-size_t kplge::AssetLoader::GetFileSize(file_p &fp) {
+size_t AssetLoader::GetFileSize(file_p &fp) {
   FILE *_fp = static_cast<FILE *>(fp);
 
   long pos = ftell(_fp);
@@ -114,3 +113,4 @@ size_t kplge::AssetLoader::GetFileSize(file_p &fp) {
 
   return length;
 }
+}  // namespace kplge

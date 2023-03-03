@@ -11,6 +11,9 @@
 
 namespace kplge {
 class AssetLoader : IRuntimeModule {
+ private:
+  std::vector<std::string> search_paths_{"", "asset/", "assets/"};
+
  public:
   AssetLoader() = default;
   ~AssetLoader() override = default;
@@ -30,11 +33,10 @@ class AssetLoader : IRuntimeModule {
   Buffer SyncLoadBinary(const char* path);
 
  private:
-  std::vector<std::string> search_paths_{"","asset/","assets/"};
-
-  bool OpenFile(file_p& fp, const char* path = "", int8_t mode = KPL_OPEN_BINARY, uint8_t level = 8);
+  bool OpenFile(
+      file_p& fp, const char* path = "", int8_t mode = KPL_OPEN_BINARY,
+      uint8_t level = 8);
   bool ColseFile(file_p& fp);
-
   size_t GetFileSize(file_p& f);
 };
 

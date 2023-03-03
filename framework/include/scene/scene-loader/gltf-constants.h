@@ -1,5 +1,8 @@
 #pragma once
 
+namespace kplge {
+namespace kplgltf {
+
 enum class PrimitiveMode {
   POINTS = 0,
   LINES = 1,
@@ -8,12 +11,6 @@ enum class PrimitiveMode {
   TRIANGLES = 4,
   TRIANGLE_STRIP = 5,
   TRIANGLE_FAN = 6,
-};
-
-enum class BufferViewTarget {
-  OTHER_TARGET,
-  ARRAY_BUFFER = 34962,
-  ELEMENT_ARRAY_BUFFER = 34963,
 };
 
 enum class ComponentType {
@@ -37,3 +34,12 @@ enum class AccessorType {
   MAT3,
   MAT4,
 };
+
+enum class BufferViewTarget {
+  OTHER_TARGET,
+  ARRAY_BUFFER = 34962,
+  ELEMENT_ARRAY_BUFFER = 34963,
+};
+
+}  // namespace kplgltf
+}  // namespace kplge
