@@ -6,7 +6,7 @@ using namespace kplge::kplgltf;
 
 int main() {
   GltfLoader gltfLoader;
-  GLtfContainer gLtfContainer = gltfLoader.ParseGltfFile("test/Box.gltf");
-  // std::cout << gLtfContainer;
+  GLtfContainer gLtfContainer = gltfLoader.ParseGltfFile("test/AnimatedMorphSphere/AnimatedMorphSphere.gltf");
+  std::cout << gLtfContainer;
   return 0;
 }

@@ -1,9 +1,26 @@
 #pragma once
 
+#include <vector>
+
 namespace kplge {
 namespace kplgltf {
 
-enum class PrimitiveMode {
+using GltfId = unsigned int;
+using GltfNum = float;
+using GltfInt = int;
+using Vector3Num = std::vector<GltfNum>;
+using Vector4Num = std::vector<GltfNum>;
+using Matrix4X4Num = std::vector<GltfNum>;
+
+const GltfId INVALID_ID = -1;
+
+const Vector4Num DEFAULT_ROTATION{0.0, 0.0, 0.0, 1.0};
+const Vector3Num DEFAULT_SCALE{1.0, 1.0, 1.0};
+const Vector3Num DEFAULT_TRANSLATION{0.0, 0.0, 0.0};
+const Matrix4X4Num DEAFULA_MATRIX{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+                                  0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0};
+
+enum class PrimitiveMode : GltfId {
   POINTS = 0,
   LINES = 1,
   LINE_LOOP = 2,

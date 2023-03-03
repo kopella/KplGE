@@ -1,11 +1,11 @@
 #include "gltf-loader.h"
 
-#include <map>
-#include <memory>
 #include <string>
+#include <map>
 #include <iostream>
 
-#include "kpllogt.h"
+#include "gltf-constants.h"
+#include "gltf-type.h"
 
 namespace kplge {
 namespace kplgltf {
@@ -31,12 +31,12 @@ GLtfContainer GltfLoader::ParseGltfFile(const char* path) {
 }
 
 bool GltfLoader::ParseScenes(GLtfContainer& gLtfContainer, json& source) {
-  for (auto& val : source) {
+  for (auto& scene_obj : source) {
     Scene scene;
 
-    ParseValue<std::string>(scene.name, val, "name");
+    ParseValue<std::string>(scene.name, scene_obj, "name");
 
-    ParseValueArray<GltfId>(scene.nodes, val, "nodes", true);
+    ParseValueArray<GltfId>(scene.nodes, scene_obj, "nodes", true);
 
     gLtfContainer.scenes.emplace_back(std::move(scene));
   }
@@ -44,31 +44,31 @@ bool GltfLoader::ParseScenes(GLtfContainer& gLtfContainer, json& source) {
 }
 
 bool GltfLoader::ParseNodes(GLtfContainer& gLtfContainer, json& source) {
-  for (auto& val : source) {
+  for (auto& node_obj : source) {
     Node node;
 
-    ParseValue<std::string>(node.name, val, "name");
+    ParseValue<std::string>(node.name, node_obj, "name");
 
-    ParseValueArray<GltfId>(node.children, val, "children");
+    ParseValueArray<GltfId>(node.children, node_obj, "children");
 
-    ParseValue<GltfId>(node.mesh, val, "mesh");
+    ParseValue<GltfId>(node.mesh, node_obj, "mesh");
 
-    ParseValue<GltfId>(node.skin, val, "skin");
+    ParseValue<GltfId>(node.skin, node_obj, "skin");
 
     std::vector<GltfNum> matrix;
-    ParseValueArray<GltfNum>(matrix, val, "matrix");
+    ParseValueArray<GltfNum>(matrix, node_obj, "matrix");
     if (matrix.empty()) {
       std::vector<GltfNum> rotation;
-      ParseValueArray<GltfNum>(rotation, val, "rotation");
+      ParseValueArray<GltfNum>(rotation, node_obj, "rotation");
       std::vector<GltfNum> scale;
-      ParseValueArray<GltfNum>(scale, val, "scale");
+      ParseValueArray<GltfNum>(scale, node_obj, "scale");
       std::vector<GltfNum> translation;
-      ParseValueArray<GltfNum>(translation, val, "translation");
+      ParseValueArray<GltfNum>(translation, node_obj, "translation");
     } else {
       node.matrix = std::move(matrix);
     }
 
-    ParseValueArray<GltfNum>(node.weights, val, "weights");
+    ParseValueArray<GltfNum>(node.weights, node_obj, "weights");
 
     gLtfContainer.nodes.emplace_back(std::move(node));
   }
@@ -76,14 +76,14 @@ bool GltfLoader::ParseNodes(GLtfContainer& gLtfContainer, json& source) {
 }
 
 bool GltfLoader::ParseMeshes(GLtfContainer& gLtfContainer, json& source) {
-  for (auto& val : source) {
+  for (auto& mesh_obj : source) {
     Mesh mesh;
 
-    ParseValue<std::string>(mesh.name, val, "name");
+    ParseValue<std::string>(mesh.name, mesh_obj, "name");
 
-    ParsePrimitives(mesh, source);
+    ParsePrimitives(mesh, mesh_obj);
 
-    ParseValueArray<GltfNum>(mesh.weights, val, "weights");
+    ParseValueArray<GltfNum>(mesh.weights, mesh_obj, "weights");
 
     gLtfContainer.meshes.emplace_back(std::move(mesh));
   }
@@ -91,26 +91,29 @@ bool GltfLoader::ParseMeshes(GLtfContainer& gLtfContainer, json& source) {
 }
 
 bool GltfLoader::ParsePrimitives(Mesh& mesh, json& source) {
-  auto it = source.find("primitives");
-  if (it != source.end()) {
-    for (auto obj : it.value()) {
+  auto primitives_it = source.find("primitives");
+  if (primitives_it != source.end()) {
+    for (auto primitive_obj : primitives_it.value()) {
       Primitive primitive;
-      ParseValueDict<GltfId>(primitive.attributes, obj, "attributes");
 
-      ParseValue<GltfId>(primitive.indices, obj, "indices");
+      ParseValueDict<GltfId>(primitive.attributes, primitive_obj, "attributes");
 
-      ParseValue<GltfId>(primitive.material, obj, "material");
+      ParseValue<GltfId>(primitive.indices, primitive_obj, "indices");
 
-      GltfInt mode;
-      ParseValue<GltfInt>(mode, source, "mode");
-      primitive.mode = static_cast<PrimitiveMode>(mode);
+      ParseValue<GltfId>(primitive.material, primitive_obj, "material");
 
-      auto targets = obj.find("targets");
-      if (it != source.end()) {
-        for (auto id : it.value()) {
+      GltfId mode{INVALID_ID};
+      ParseValue<GltfId>(mode, primitive_obj, "mode");
+      if (mode != INVALID_ID) {
+        primitive.mode = static_cast<PrimitiveMode>(mode);
+      }
+
+      auto targets_it = primitive_obj.find("targets");
+      if (targets_it != primitive_obj.end()) {
+        for (auto target_obj : targets_it.value()) {
           std::map<std::string, GltfId> target;
-          for (auto target_it = id.begin(); target_it != id.end();
-               target_it++) {
+          for (auto target_it = target_obj.begin();
+               target_it != target_obj.end(); target_it++) {
             target[target_it.key().c_str()] = target_it.value().get<GltfId>();
           }
           primitive.targets.push_back(std::move(target));

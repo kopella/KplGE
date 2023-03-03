@@ -9,20 +9,6 @@
 
 namespace kplge {
 namespace kplgltf {
-using GltfId = unsigned int;
-using GltfNum = float;
-using GltfInt = int;
-using Vector3Num = std::vector<GltfNum>;
-using Vector4Num = std::vector<GltfNum>;
-using Matrix4X4Num = std::vector<GltfNum>;
-
-const GltfId INVALID_ID = -1;
-
-const Vector4Num DEFAULT_ROTATION{0.0, 0.0, 0.0, 1.0};
-const Vector3Num DEFAULT_SCALE{1.0, 1.0, 1.0};
-const Vector3Num DEFAULT_TRANSLATION{0.0, 0.0, 0.0};
-const Matrix4X4Num DEAFULA_MATRIX{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-                                  0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0};
 
 struct Asset {
   std::string version{"2.0"};
@@ -153,28 +139,31 @@ struct Primitive {
   std::vector<std::map<std::string, GltfId>> targets;
 
   friend std::ostream& operator<<(std::ostream& out, Primitive& primitive) {
-    out << " - "
+    out << " | "
+        << " - "
         << "Attributes: " << std::endl;
     for (auto& [key, value] : primitive.attributes) {
-      out << " - "
-          << " - " << key << value << std::endl;
+      out << " | "
+          << " | "
+          << " - " << key << ": " << value << std::endl;
     }
 
-    out << " - "
-        << "Indices: ";
-    if (primitive.indices != INVALID_ID)
+    if (primitive.indices != INVALID_ID) {
+      out << " | "
+          << " - "
+          << "Indices: ";
       out << primitive.indices << std::endl;
-    else
-      out << "INVALID" << std::endl;
+    }
 
-    out << " - "
-        << "Material: ";
-    if (primitive.material != INVALID_ID)
+    if (primitive.material != INVALID_ID) {
+      out << " | "
+          << " - "
+          << "Material: ";
       out << primitive.material << std::endl;
-    else
-      out << "INVALID" << std::endl;
+    }
 
-    out << " - "
+    out << " | "
+        << " - "
         << "Mode: ";
     switch (primitive.mode) {
       case PrimitiveMode::POINTS:
@@ -200,19 +189,26 @@ struct Primitive {
         break;
     }
 
-    out << " - "
-        << "Targets: ";
     if (!primitive.targets.empty()) {
-      out << std::endl;
+      out << " | "
+          << " - "
+          << "Targets: " << std::endl;
+
       for (auto& target : primitive.targets) {
+        out << " | "
+            << " | "
+            << " - "
+            << "------" << std::endl;
         for (auto& [key, value] : target) {
-          out << " - "
-              << " - " << key << value << std::endl;
+          out << " | "
+              << " | "
+              << " - " << key << ": " << value << std::endl;
         }
-        out << std::endl;
       }
-    } else {
-      out << "NULL" << std::endl;
+      out << " | "
+          << " | "
+          << " - "
+          << "------" << std::endl;
     }
     return out;
   }
@@ -229,7 +225,6 @@ struct Mesh {
     out << " - "
         << "Primitives: " << std::endl;
     for (auto& primitive : mesh.primitives) {
-      out << " -  - " << std::endl;
       out << primitive;
     }
 

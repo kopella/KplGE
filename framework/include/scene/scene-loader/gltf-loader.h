@@ -31,6 +31,15 @@ class GLtfContainer {
     out << "Scene: " << gLtfContainer.scene << std::endl;
 
     out << std::endl;
+    out << "Scenes: " << std::endl;
+    out << "------" << std::endl;
+    for (auto& scene : gLtfContainer.scenes) {
+      out << scene;
+    }
+    out << "------" << std::endl;
+
+
+    out << std::endl;
     out << "Nodes: " << std::endl;
     out << "------" << std::endl;
     for (auto& node : gLtfContainer.nodes) {
