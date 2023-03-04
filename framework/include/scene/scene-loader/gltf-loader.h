@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "gltf-constants.h"
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
 
@@ -14,13 +15,13 @@ namespace kplgltf {
 class GLtfContainer {
  public:
   Asset asset;
-  GltfId scene;
+  GltfId scene{INVALID_ID};
   std::vector<Scene> scenes;
   std::vector<Node> nodes;
   std::vector<Mesh> meshes;
   std::vector<Accessor> accessors;
-  std::vector<Buffer> buffers;
   std::vector<BufferView> bufferViews;
+  std::vector<Buffer> buffers;
 
  public:
   friend std::ostream& operator<<(
@@ -38,7 +39,6 @@ class GLtfContainer {
     }
     out << "------" << std::endl;
 
-
     out << std::endl;
     out << "Nodes: " << std::endl;
     out << "------" << std::endl;
@@ -54,6 +54,31 @@ class GLtfContainer {
       out << mesh;
     }
     out << "------" << std::endl;
+
+    out << std::endl;
+    out << "Accessors: " << std::endl;
+    out << "------" << std::endl;
+    for (auto& accessor : gLtfContainer.accessors) {
+      out << accessor;
+    }
+    out << "------" << std::endl;
+
+    out << std::endl;
+    out << "BufferViews: " << std::endl;
+    out << "------" << std::endl;
+    for (auto& bufferView : gLtfContainer.bufferViews) {
+      out << bufferView;
+    }
+    out << "------" << std::endl;
+
+    out << std::endl;
+    out << "Buffer: " << std::endl;
+    out << "------" << std::endl;
+    for (auto& buffer : gLtfContainer.buffers) {
+      out << buffer;
+    }
+    out << "------" << std::endl;
+
     return out;
   }
 };
@@ -62,17 +87,28 @@ class GltfLoader {
  public:
   AssetLoader assetLoader;
 
+ private:
+  std::string path_;
+
  public:
   GltfLoader() = default;
   ~GltfLoader() = default;
 
-  GLtfContainer ParseGltfFile(const char* path);
+  bool ParseGltfFile(GLtfContainer& gLtfContainer, const char* path);
 
  private:
   bool ParseScenes(GLtfContainer& gLtfContainer, json& source);
   bool ParseNodes(GLtfContainer& gLtfContainer, json& source);
   bool ParseMeshes(GLtfContainer& gLtfContainer, json& source);
   bool ParsePrimitives(Mesh& mesh, json& source);
+  bool ParseAccessors(GLtfContainer& gLtfContainer, json& source);
+  bool ParseSparse(Accessor& accessor, json& source);
+  bool ParseBufferViews(GLtfContainer& gLtfContainer, json& source);
+  bool ParseBuffers(GLtfContainer& gLtfContainer, json& source);
+  bool ParseBufferURI(Buffer& buffer);
+
+  bool DecodeBufferURI(Buffer& buffer);
+  bool LoadBinFile(Buffer& buffer);
 
   template <typename T>
   bool ParseValue(
@@ -87,31 +123,7 @@ class GltfLoader {
   bool ParseValueDict(
       std::map<std::string, T>& ret, const json& source, const char* property,
       bool required = false);
-
-  //   bool ParseString(
-  //       std::string& ret, const json& source, const char* property,
-  //       bool required = false);
-  //   bool ParseStringGltfIdDict(
-  //       std::map<std::string, GltfId>& ret, const json& source,
-  //       const char* property, bool required = false);
-  //   bool ParseGltfId(
-  //       GltfId& ret, const json& source, const char* property,
-  //       bool required = false);
-  //   bool ParseGltfIdArray(
-  //       std::vector<GltfId>& ret, const json& source, const char* property,
-  //       bool required = false);
-  //   bool ParseGltfInt(
-  //       GltfInt& ret, const json& source, const char* property,
-  //       bool required = false);
-  //   bool ParseGltfIntArray(
-  //       std::vector<GltfInt>& ret, const json& source, const char* property,
-  //       bool required = false);
-  //   bool ParseGltfNum(
-  //       GltfNum& ret, const json& source, const char* property,
-  //       bool required = false);
-  //   bool ParseGltfNumArray(
-  //       std::vector<GltfNum>& ret, const json& source, const char* property,
-  //       bool required = false);
 };
+
 }  // namespace kplgltf
 }  // namespace kplge

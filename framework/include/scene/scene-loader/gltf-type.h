@@ -54,7 +54,6 @@ struct Node {
 
   friend std::ostream& operator<<(std::ostream& out, Node& node) {
     out << "Node: " << node.name << std::endl;
-
     if (!node.children.empty()) {
       out << " - "
           << "Children: "
@@ -164,30 +163,7 @@ struct Primitive {
 
     out << " | "
         << " - "
-        << "Mode: ";
-    switch (primitive.mode) {
-      case PrimitiveMode::POINTS:
-        out << "POINTS" << std::endl;
-        break;
-      case PrimitiveMode::LINES:
-        out << "LINES" << std::endl;
-        break;
-      case PrimitiveMode::LINE_LOOP:
-        out << "LINE_LOOP" << std::endl;
-        break;
-      case PrimitiveMode::LINE_STRIP:
-        out << "LINE_STRIP" << std::endl;
-        break;
-      case PrimitiveMode::TRIANGLES:
-        out << "TRIANGLES" << std::endl;
-        break;
-      case PrimitiveMode::TRIANGLE_STRIP:
-        out << "TRIANGLE_STRIP" << std::endl;
-        break;
-      case PrimitiveMode::TRIANGLE_FAN:
-        out << "TRIANGLE_FAN" << std::endl;
-        break;
-    }
+        << "Mode: " << primitive.mode << std::endl;
 
     if (!primitive.targets.empty()) {
       out << " | "
@@ -242,30 +218,144 @@ struct Mesh {
   }
 };
 
+struct Sparse {
+  GltfInt count;
+  struct {
+    GltfId bufferView{INVALID_ID};
+    GltfInt byteOffset{0};
+    ComponentType componentType;
+  } indices;
+  struct {
+    GltfId bufferView{INVALID_ID};
+    GltfInt byteOffset{0};
+  } values;
+  bool used{false};
+
+  friend std::ostream& operator<<(std::ostream& out, Sparse& sparse) {
+    return out;
+  }
+};
+
 struct Accessor {
   std::string name;
   GltfId bufferView{INVALID_ID};
   GltfInt byteOffset{0};
+  bool normalized{false};
   ComponentType componentType{ComponentType::OTHER_TYPE};
   GltfInt count;
-  bool normalized{false};
-  AccessorType accessorType{AccessorType::OTHER_TYPE};
+  AccessorType type{AccessorType::OTHER_TYPE};
+  Sparse sparse;
+  std::vector<GltfNum> maxValues;
+  std::vector<GltfNum> minValues;
+
+  friend std::ostream& operator<<(std::ostream& out, Accessor& accessor) {
+    out << "Accessor: " << accessor.name << std::endl;
+
+    if (accessor.bufferView != INVALID_ID) {
+      out << " - "
+          << "bufferView: " << accessor.bufferView << std::endl;
+    }
+
+    out << " - "
+        << "byteOffset: " << accessor.byteOffset << std::endl;
+
+    if (accessor.normalized) {
+      out << " - "
+          << "normalized: "
+          << "TRUE" << std::endl;
+    }
+
+    out << " - "
+        << "componentType: " << accessor.componentType << std ::endl;
+
+    out << " - "
+        << "count: " << accessor.count << std::endl;
+
+    out << " - "
+        << "type: " << accessor.type << std::endl;
+
+    if (accessor.sparse.used) {
+      out << " - "
+          << "sparse: " << std::endl;
+      out << accessor.sparse;
+    }
+
+    if (!accessor.maxValues.empty()) {
+      out << " - "
+          << "max: "
+          << "[ ";
+      for (size_t i = 0; i < accessor.maxValues.size(); ++i) {
+        out << accessor.maxValues[i]
+            << (i != accessor.maxValues.size() - 1 ? ", " : "");
+      }
+      out << " ]" << std::endl;
+    }
+
+    if (!accessor.minValues.empty()) {
+      out << " - "
+          << "min: "
+          << "[ ";
+      for (size_t i = 0; i < accessor.minValues.size(); ++i) {
+        out << accessor.minValues[i]
+            << (i != accessor.minValues.size() - 1 ? ", " : "");
+      }
+      out << " ]" << std::endl;
+    }
+    return out;
+  }
+};
+
+struct BufferView {
+  std::string name;
+  GltfId buffer{INVALID_ID};
+  GltfInt byteOffset{0};
+  GltfInt byteLength{0};
+  GltfInt byteStride{0};
+  BufferViewTarget target{BufferViewTarget::OTHER_TARGET};
+
+  friend std::ostream& operator<<(std::ostream& out, BufferView& bufferView) {
+    out << "BufferView: " << bufferView.name << std::endl;
+
+    if (bufferView.buffer != INVALID_ID) {
+      out << " - "
+          << "bufferView: " << bufferView.buffer << std::endl;
+    }
+
+    out << " - "
+        << "byteOffset: " << bufferView.byteOffset << std::endl;
+
+    out << " - "
+        << "byteLength: " << bufferView.byteLength << std::endl;
+
+    if (bufferView.byteStride != 0) {
+      out << " - "
+          << "byteStride: " << bufferView.byteStride << std::endl;
+    }
+
+    out << " - "
+        << "target: " << bufferView.target << std::endl;
+
+    return out;
+  }
 };
 
 struct Buffer {
   std::string name;
   std::string uri;
   GltfInt byteLength;
-  unsigned char* data;
-};
+  std::vector<unsigned char> data;
 
-struct BufferView {
-  std::string name;
-  GltfId buffer{INVALID_ID};
-  GltfInt byteOffset;
-  GltfInt byteLength;
-  GltfInt byteStride;
-  BufferViewTarget target{BufferViewTarget::OTHER_TARGET};
+  friend std::ostream& operator<<(std::ostream& out, Buffer& buffer) {
+    out << "Buffer: " << buffer.name << std::endl;
+
+    out << " - "
+        << "uri: " << buffer.uri << std::endl;
+
+    out << " - "
+        << "byteLength: " << buffer.byteLength << std::endl;
+
+    return out;
+  }
 };
 
 }  // namespace kplgltf

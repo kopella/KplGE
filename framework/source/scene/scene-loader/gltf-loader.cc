@@ -4,39 +4,50 @@
 #include <map>
 #include <iostream>
 
+#include "buffer.h"
 #include "gltf-constants.h"
 #include "gltf-type.h"
+#include "gltf-tools.h"
+#include "kpllogt.h"
 
 namespace kplge {
 namespace kplgltf {
 
-GLtfContainer GltfLoader::ParseGltfFile(const char* path) {
+bool GltfLoader::ParseGltfFile(GLtfContainer& gLtfContainer, const char* path) {
+  path_ = path;
+  runtime_info("GltfLoader", "Parse gltf file '%s'\n", path);
   assetLoader.AddSearchPath("asset/glTF/");
-  json gltfJson = json::parse(assetLoader.SyncLoadText(path).get_data());
+  json gltfJson =
+      json::parse(assetLoader.SyncLoadText(path).get_data_pointer());
 
-  GLtfContainer gLtfContainer;
   for (auto& el : gltfJson.items()) {
     if (el.key() == "scene") {
-      gLtfContainer.scene = el.value().get<GltfId>();
+      if (!ParseValue(gLtfContainer.scene, gltfJson, "scene", true)) return 0;
     } else if (el.key() == "scenes") {
-      ParseScenes(gLtfContainer, el.value());
+      if (!ParseScenes(gLtfContainer, el.value())) return 0;
     } else if (el.key() == "nodes") {
-      ParseNodes(gLtfContainer, el.value());
+      if (!ParseNodes(gLtfContainer, el.value())) return 0;
     } else if (el.key() == "meshes") {
-      ParseMeshes(gLtfContainer, el.value());
+      if (!ParseMeshes(gLtfContainer, el.value())) return 0;
+    } else if (el.key() == "accessors") {
+      if (!ParseAccessors(gLtfContainer, el.value())) return 0;
+    } else if (el.key() == "bufferViews") {
+      if (!ParseBufferViews(gLtfContainer, el.value())) return 0;
+    } else if (el.key() == "buffers") {
+      if (!ParseBuffers(gLtfContainer, el.value())) return 0;
     }
   }
 
-  return gLtfContainer;
+  return 1;
 }
 
 bool GltfLoader::ParseScenes(GLtfContainer& gLtfContainer, json& source) {
   for (auto& scene_obj : source) {
     Scene scene;
 
-    ParseValue<std::string>(scene.name, scene_obj, "name");
+    ParseValue(scene.name, scene_obj, "name");
 
-    ParseValueArray<GltfId>(scene.nodes, scene_obj, "nodes", true);
+    ParseValueArray(scene.nodes, scene_obj, "nodes", true);
 
     gLtfContainer.scenes.emplace_back(std::move(scene));
   }
@@ -47,13 +58,13 @@ bool GltfLoader::ParseNodes(GLtfContainer& gLtfContainer, json& source) {
   for (auto& node_obj : source) {
     Node node;
 
-    ParseValue<std::string>(node.name, node_obj, "name");
+    ParseValue(node.name, node_obj, "name");
 
-    ParseValueArray<GltfId>(node.children, node_obj, "children");
+    ParseValueArray(node.children, node_obj, "children");
 
-    ParseValue<GltfId>(node.mesh, node_obj, "mesh");
+    ParseValue(node.mesh, node_obj, "mesh");
 
-    ParseValue<GltfId>(node.skin, node_obj, "skin");
+    ParseValue(node.skin, node_obj, "skin");
 
     std::vector<GltfNum> matrix;
     ParseValueArray<GltfNum>(matrix, node_obj, "matrix");
@@ -79,7 +90,7 @@ bool GltfLoader::ParseMeshes(GLtfContainer& gLtfContainer, json& source) {
   for (auto& mesh_obj : source) {
     Mesh mesh;
 
-    ParseValue<std::string>(mesh.name, mesh_obj, "name");
+    ParseValue(mesh.name, mesh_obj, "name");
 
     ParsePrimitives(mesh, mesh_obj);
 
@@ -96,14 +107,14 @@ bool GltfLoader::ParsePrimitives(Mesh& mesh, json& source) {
     for (auto primitive_obj : primitives_it.value()) {
       Primitive primitive;
 
-      ParseValueDict<GltfId>(primitive.attributes, primitive_obj, "attributes");
+      ParseValueDict(primitive.attributes, primitive_obj, "attributes");
 
-      ParseValue<GltfId>(primitive.indices, primitive_obj, "indices");
+      ParseValue(primitive.indices, primitive_obj, "indices");
 
-      ParseValue<GltfId>(primitive.material, primitive_obj, "material");
+      ParseValue(primitive.material, primitive_obj, "material");
 
       GltfId mode{INVALID_ID};
-      ParseValue<GltfId>(mode, primitive_obj, "mode");
+      ParseValue(mode, primitive_obj, "mode");
       if (mode != INVALID_ID) {
         primitive.mode = static_cast<PrimitiveMode>(mode);
       }
@@ -126,12 +137,158 @@ bool GltfLoader::ParsePrimitives(Mesh& mesh, json& source) {
   return 1;
 }
 
+bool GltfLoader::ParseAccessors(GLtfContainer& gLtfContainer, json& source) {
+  for (auto accessors_obj : source) {
+    Accessor accessor;
+
+    ParseValue(accessor.name, accessors_obj, "name");
+
+    ParseValue(accessor.bufferView, accessors_obj, "bufferView");
+
+    ParseValue(accessor.byteOffset, accessors_obj, "byteOffset");
+
+    ParseValue(accessor.normalized, accessors_obj, "normalized");
+
+    GltfId componentType{INVALID_ID};
+    if (!ParseValue(componentType, accessors_obj, "componentType", true)) {
+      return 0;
+    }
+    accessor.componentType = static_cast<ComponentType>(componentType);
+
+    if (!ParseValue(accessor.count, accessors_obj, "count", true)) {
+      return 0;
+    }
+
+    std::string type;
+    if (!ParseValue(type, accessors_obj, "type", true)) {
+      return 0;
+    }
+    if (type.compare("SCALAR") == 0) {
+      accessor.type = AccessorType::SCALAR;
+    } else if (type.compare("VEC2") == 0) {
+      accessor.type = AccessorType::VEC2;
+    } else if (type.compare("VEC3") == 0) {
+      accessor.type = AccessorType::VEC3;
+    } else if (type.compare("VEC4") == 0) {
+      accessor.type = AccessorType::VEC4;
+    } else if (type.compare("MAT2") == 0) {
+      accessor.type = AccessorType::MAT2;
+    } else if (type.compare("MAT3") == 0) {
+      accessor.type = AccessorType::MAT3;
+    } else if (type.compare("MAT4") == 0) {
+      accessor.type = AccessorType::MAT4;
+    } else {
+      accessor.type = AccessorType::OTHER_TYPE;
+    }
+
+    ParseValueArray<GltfNum>(accessor.maxValues, accessors_obj, "max");
+
+    ParseValueArray<GltfNum>(accessor.minValues, accessors_obj, "min");
+
+    gLtfContainer.accessors.emplace_back(std::move(accessor));
+  }
+
+  return 1;
+}
+
+bool GltfLoader::ParseSparse(Accessor& accessor, json& source) {
+  // TODO: Parse Sparse.
+  return 1;
+}
+
+bool GltfLoader::ParseBufferViews(GLtfContainer& gLtfContainer, json& source) {
+  for (auto bufferView_obj : source) {
+    BufferView bufferView;
+
+    ParseValue(bufferView.name, bufferView_obj, "name");
+
+    if (!ParseValue(bufferView.buffer, bufferView_obj, "buffer", true)) {
+      return 0;
+    }
+
+    ParseValue(bufferView.byteOffset, bufferView_obj, "byteOffset");
+
+    if (!ParseValue(
+            bufferView.byteLength, bufferView_obj, "byteLength", true)) {
+      return 0;
+    }
+
+    ParseValue(bufferView.byteStride, bufferView_obj, "byteStride");
+
+    GltfId target{INVALID_ID};
+    ParseValue(target, bufferView_obj, "target");
+    if (target != INVALID_ID) {
+      bufferView.target = static_cast<BufferViewTarget>(target);
+    }
+
+    gLtfContainer.bufferViews.emplace_back(std::move(bufferView));
+  }
+
+  return 1;
+}
+
+bool GltfLoader::ParseBuffers(GLtfContainer& gLtfContainer, json& source) {
+  for (auto buffer_obj : source) {
+    Buffer buffer;
+
+    ParseValue(buffer.name, buffer_obj, "name");
+
+    ParseValue(buffer.uri, buffer_obj, "uri");
+
+    if (!ParseValue(buffer.byteLength, buffer_obj, "byteLength", true)) {
+      return 0;
+    }
+
+    if (!ParseBufferURI(buffer)) {
+      return 0;
+    }
+
+    gLtfContainer.buffers.emplace_back(std::move(buffer));
+  }
+  return 1;
+}
+
+bool GltfLoader::ParseBufferURI(Buffer& buffer) {
+  if (buffer.uri.find("data") == 0) {
+    if (!DecodeBufferURI(buffer)) return 0;
+  } else {
+    if (!LoadBinFile(buffer)) return 0;
+  }
+
+  return 1;
+}
+
+bool GltfLoader::DecodeBufferURI(Buffer& buffer) {
+  std::string data;
+  std::string header = "data:application/octet-stream;base64,";
+  if (buffer.uri.find(header) == 0) {
+    data = base64_decode(buffer.uri.substr(header.size()));
+  }
+
+  if (data.empty()) return 0;
+  std::copy(data.begin(), data.end(), buffer.data.begin());
+  return 1;
+}
+
+// FIXME: Need to optimize asset loader component.
+bool GltfLoader::LoadBinFile(Buffer& buffer) {
+  std::string new_path = path_;
+  size_t pos = new_path.find(".gltf");
+  new_path.replace(pos, 5, ".bin");
+  auto bin_buffer = assetLoader.SyncLoadBinary(new_path.c_str());
+
+  if (bin_buffer.data.empty()) return 0;
+  buffer.data = bin_buffer.data;
+  return 1;
+}
+
 template <typename T>
 bool GltfLoader::ParseValue(
     T& ret, const json& source, const char* property, bool required) {
   auto it = source.find(property);
   if (it != source.end()) {
     ret = it.value().get<T>();
+    return 1;
   } else if (required) {
     return 0;
   }
@@ -148,6 +305,7 @@ bool GltfLoader::ParseValueArray(
     for (auto id : it.value()) {
       ret.push_back(id.get<T>());
     }
+    return 1;
   } else if (required) {
     return 0;
   }
@@ -163,108 +321,12 @@ bool GltfLoader::ParseValueDict(
     for (auto id = it.value().begin(); id != it.value().end(); ++id) {
       ret[id.key().c_str()] = id.value().get<T>();
     }
+    return 1;
   } else if (required) {
     return 0;
   }
   return 1;
 }
-
-// bool GltfLoader::ParseString(
-//     std::string& ret, const json& source, const char* property, bool
-//     required) {
-//   auto it = source.find(property);
-//   if (it != source.end()) {
-//     ret = it.value().get<std::string>();
-//   } else if (required) {
-//     return 0;
-//   }
-//   return 1;
-// }
-// bool ParseStringGltfIdDict(
-//     std::map<std::string, GltfId>& ret, const json& source,
-//     const char* property, bool required) {
-//   auto it = source.find(property);
-//   if (it != source.end()) {
-//     for (auto id = it.value().begin(); id != it.value().end(); ++id) {
-//       ret[id.key().c_str()] = id.value().get<GltfId>();
-//     }
-//   } else if (required) {
-//     return 0;
-//   }
-//   return 1;
-// }
-// bool GltfLoader::ParseGltfId(
-//     GltfId& ret, const json& source, const char* property, bool required) {
-//   auto it = source.find(property);
-//   if (it != source.end()) {
-//     ret = it.value().get<GltfId>();
-//   } else if (required) {
-//     return 0;
-//   }
-//   return 1;
-// }
-// bool GltfLoader::ParseGltfIdArray(
-//     std::vector<GltfId>& ret, const json& source, const char* property,
-//     bool required) {
-//   auto it = source.find(property);
-//   ret.clear();
-//   if (it != source.end()) {
-//     for (auto id : it.value()) {
-//       ret.push_back(id.get<GltfId>());
-//     }
-//   } else if (required) {
-//     return 0;
-//   }
-//   return 1;
-// }
-// bool GltfLoader::ParseGltfInt(
-//     GltfInt& ret, const json& source, const char* property, bool required) {
-//   auto it = source.find(property);
-//   if (it != source.end()) {
-//     ret = it.value().get<GltfInt>();
-//   } else if (required) {
-//     return 0;
-//   }
-//   return 1;
-// }
-// bool GltfLoader::ParseGltfIntArray(
-//     std::vector<GltfInt>& ret, const json& source, const char* property,
-//     bool required) {
-//   auto it = source.find(property);
-//   ret.clear();
-//   if (it != source.end()) {
-//     for (auto id : it.value()) {
-//       ret.push_back(id.get<GltfInt>());
-//     }
-//   } else if (required) {
-//     return 0;
-//   }
-//   return 1;
-// }
-// bool GltfLoader::ParseGltfNum(
-//     GltfNum& ret, const json& source, const char* property, bool required) {
-//   auto it = source.find(property);
-//   if (it != source.end()) {
-//     ret = it.value().get<GltfNum>();
-//   } else if (required) {
-//     return 0;
-//   }
-//   return 1;
-// }
-// bool GltfLoader::ParseGltfNumArray(
-//     std::vector<GltfNum>& ret, const json& source, const char* property,
-//     bool required) {
-//   auto it = source.find(property);
-//   ret.clear();
-//   if (it != source.end()) {
-//     for (auto id : it.value()) {
-//       ret.push_back(id.get<GltfNum>());
-//     }
-//   } else if (required) {
-//     return 0;
-//   }
-//   return 1;
-// }
 
 }  // namespace kplgltf
 }  // namespace kplge

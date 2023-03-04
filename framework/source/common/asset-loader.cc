@@ -36,17 +36,18 @@ Buffer AssetLoader::SyncLoadText(const char *path) {
   Buffer buffer;
 
   if (!OpenFile(fp, path, KPL_OPEN_TEXT)) {
-    runtime_info("Can't open file '%s'", path);
+    runtime_info("AssetLoader", "Can't open file '%s'", path);
   } else {
     size_t length = GetFileSize(fp);
 
     uint8_t *data = new uint8_t[length + 1];
     fread(data, length, 1, static_cast<FILE *>(fp));
 
-    runtime_info("Read text file '%s', %zu bytes\n", path, length);
+    runtime_info(
+        "AssetLoader", "Read text file '%s' with %zu bytes\n", path, length);
 
     data[length] = '\0';
-    buffer.set_data(data, length + 1);
+    buffer.set_data_by_pointer(data, length + 1);
 
     ColseFile(fp);
   }
@@ -58,15 +59,16 @@ Buffer AssetLoader::SyncLoadBinary(const char *path) {
   Buffer buffer{};
 
   if (!OpenFile(fp, path, KPL_OPEN_BINARY)) {
-    runtime_info("Can't open file '%s'", path);
+    runtime_info("AssetLoader", "Can't open file '%s'", path);
   } else {
     size_t length = GetFileSize(fp);
     uint8_t *data = new uint8_t[length];
     fread(data, length, 1, static_cast<FILE *>(fp));
 
-    runtime_info("Read binary file '%s', %zu bytes\n", path, length);
+    runtime_info(
+        "AssetLoader", "Read binary file '%s' with %zu bytes\n", path, length);
 
-    buffer.set_data(data, length);
+    buffer.set_data_by_pointer(data, length);
     ColseFile(fp);
   }
   return buffer;
