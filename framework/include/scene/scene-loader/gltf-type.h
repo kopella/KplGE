@@ -31,7 +31,8 @@ struct Scene {
 
   friend std::ostream& operator<<(std::ostream& out, Scene& scene) {
     out << "Scene: " << scene.name << std::endl;
-    out << "Nodes: "
+    out << " - "
+        << "Nodes: "
         << "[ ";
     for (size_t i = 0; i < scene.nodes.size(); ++i) {
       out << scene.nodes[i] << (i != scene.nodes.size() - 1 ? ", " : "");
@@ -45,6 +46,7 @@ struct Node {
   std::string name;
   std::vector<GltfId> children;
   GltfId mesh{INVALID_ID};
+  GltfId camera{INVALID_ID};
   GltfId skin{INVALID_ID};
   Matrix4X4Num matrix{DEAFULA_MATRIX};
   Vector4Num rotation{DEFAULT_ROTATION};
@@ -67,6 +69,11 @@ struct Node {
     if (node.mesh != INVALID_ID) {
       out << " - "
           << "Mesh: " << node.mesh << std::endl;
+    }
+
+    if (node.camera != INVALID_ID) {
+      out << " - "
+          << "Camera: " << node.mesh << std::endl;
     }
 
     if (node.skin != INVALID_ID) {

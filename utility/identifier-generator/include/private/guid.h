@@ -8,15 +8,11 @@ class Guid {
   std::array<unsigned char, 16> bytes_;
 
  public:
-  Guid() : bytes_{} {}
-  Guid(const Guid& source) : bytes_(source.bytes_) {}
-  Guid operator=(const Guid& source) {
-    this->bytes_ = source.bytes_;
-    return *this;
-  }
-  Guid(const std::array<unsigned char, 16>& bytes) {
-    this->bytes_ = std::move(bytes);
-  }
+  Guid() { this->Generate(); }
+  Guid(Guid& source) = default;
+  Guid& operator=(Guid& source) = default;
+  Guid(Guid&& source) = default;
+  Guid& operator=(Guid&& source) = default;
 
   void Generate();
 

@@ -2,8 +2,14 @@ if(${KPLGE_TARGET_PLATFORM} MATCHES "windows")
     if(${KPLGE_GRAPHIC_API} MATCHES "opengl")
         add_executable(windows-opengl-test
             windows-opengl-test.cc)
+        target_include_directories(windows-opengl-test PRIVATE
+            "${KPL_IDGEN_INCLUDE_DIR}"
+            "${KPL_CALCT_INCLUDE_DIR}"
+            "${KPL_LOGT_INCLUDE_DIR}"
+        )
         target_include_directories(windows-opengl-test PRIVATE "${KPL_FRAMEWORK_INCLUDE_DIR}/application")
-        target_include_directories(windows-opengl-test PRIVATE "${KPL_LOGT_INCLUDE_DIR}")
+        target_include_directories(windows-opengl-test PRIVATE "${KPL_FRAMEWORK_INCLUDE_DIR}/common")
+        target_include_directories(windows-opengl-test PRIVATE "${KPL_FRAMEWORK_INCLUDE_DIR}/scene")
         target_link_libraries(windows-opengl-test
             framework
             platform

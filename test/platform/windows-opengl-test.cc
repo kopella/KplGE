@@ -2,6 +2,7 @@
 
 #include "windows-application.h"
 #include "wgl-manager.h"
+#include "scene-manager.h"
 #include "kpllogt.h"
 
 using namespace kplge;

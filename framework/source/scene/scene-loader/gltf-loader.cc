@@ -4,11 +4,12 @@
 #include <map>
 #include <iostream>
 
+#include "kpllogt.h"
+
 #include "buffer.h"
 #include "gltf-constants.h"
 #include "gltf-type.h"
 #include "gltf-tools.h"
-#include "kpllogt.h"
 
 namespace kplge {
 namespace kplgltf {
@@ -63,6 +64,8 @@ bool GltfLoader::ParseNodes(GLtfContainer& gLtfContainer, json& source) {
     ParseValueArray(node.children, node_obj, "children");
 
     ParseValue(node.mesh, node_obj, "mesh");
+
+    ParseValue(node.camera, node_obj, "camera");
 
     ParseValue(node.skin, node_obj, "skin");
 
@@ -266,6 +269,7 @@ bool GltfLoader::DecodeBufferURI(Buffer& buffer) {
   }
 
   if (data.empty()) return 0;
+  buffer.data.resize(data.size());
   std::copy(data.begin(), data.end(), buffer.data.begin());
   return 1;
 }
