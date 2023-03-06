@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <ostream>
 #include <vector>
 
 #include "kplcalct.h"
@@ -23,7 +24,7 @@ class SceneBaseNode {
 
 class SceneMeshNode : public SceneBaseNode {
  protected:
-  // std::shared_ptr<SceneMesh> mesh_{};
+  std::shared_ptr<SceneMesh> mesh_{};
   std::vector<SceneMeshNode> meshNodes_{};
 
   Matrix4X4f transform_;
@@ -32,9 +33,21 @@ class SceneMeshNode : public SceneBaseNode {
   SceneMeshNode() {}
   SceneMeshNode(std::string name) : SceneBaseNode(name) {}
 
-  // std::shared_ptr<SceneMesh>& GetObject() { return mesh_; }
+  std::shared_ptr<SceneMesh>& GetObject() { return mesh_; }
   std::vector<SceneMeshNode>& GetChildren() { return meshNodes_; }
   std::vector<SceneMeshNode>& GetMeshNodes() { return meshNodes_; }
+
+  friend std::ostream& operator<<(std::ostream& out, SceneMeshNode& node) {
+    out << "Mesh Node: " << node.name_ << std::endl;
+    out << *node.mesh_;
+    if (!node.meshNodes_.empty()) {
+      out << "> Children mesh nodes: " << std::endl;
+      for (auto& child : node.meshNodes_) {
+        out << child;
+      }
+    }
+    return out;
+  }
 };
 
 class SceneNode : public SceneBaseNode {
@@ -47,5 +60,22 @@ class SceneNode : public SceneBaseNode {
 
   std::vector<SceneNode>& GetChildren() { return children_; }
   std::vector<SceneMeshNode>& GetMeshNodes() { return meshNodes; }
+
+  friend std::ostream& operator<<(std::ostream& out, SceneNode& node) {
+    out << "Scean node: " << node.name_ << std::endl;
+    if (!node.children_.empty()) {
+      out << "> Children scene nodes: " << std::endl;
+      for (auto& child : node.children_) {
+        out << child;
+      }
+    }
+    if (!node.meshNodes.empty()) {
+      out << "> Children mesh nodes: " << std::endl;
+      for (auto& mesh : node.meshNodes) {
+        out << mesh;
+      }
+    }
+    return out;
+  }
 };
 }  // namespace kplge

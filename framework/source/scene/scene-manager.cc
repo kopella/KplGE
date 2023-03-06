@@ -1,8 +1,11 @@
 #include "scene-manager.h"
 
+#include <memory>
+
 #include "kpllogt.h"
 
 #include "scene-loader.h"
+#include "scene-mesh.h"
 #include "scene-node.h"
 
 namespace kplge {
@@ -39,7 +42,6 @@ bool SceneManager::LoadGltfNode(
         node.camera == kplgltf::INVALID_ID &&
         node.skin == kplgltf::INVALID_ID) {
       SceneNode newNode = SceneNode(node.name);
-      std::cout << node.name << std::endl;
       if (!node.children.empty()) {
         LoadGltfNode(newNode, node.children, gLtfContainer);
       }
@@ -49,6 +51,8 @@ bool SceneManager::LoadGltfNode(
     // Mesh:
     if (node.mesh != kplgltf::INVALID_ID) {
       SceneMeshNode meshNode = SceneMeshNode(node.name);
+      meshNode.GetObject() = std::make_shared<SceneMesh>(
+          gLtfContainer.meshes[node.mesh], gLtfContainer);
       if (!node.children.empty()) {
         LoadGltfMeshNode(meshNode, node.children, gLtfContainer);
       }

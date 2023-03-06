@@ -1,23 +1,37 @@
 #include "scene-object.h"
 #include "scene-mesh.h"
 
+#include <iostream>
+
+#include "scene-type.h"
+
 namespace kplge {
-SceneMesh::SceneMesh(
-    kplgltf::Mesh mesh, kplgltf::GLtfContainer& gLtfContainer) {
+std::ostream& operator<<(std::ostream& out, const SceneObjectType type) {
+  switch (type) {
+    case SceneObjectType::MESH:
+      out << "MESH";
+      break;
+    case SceneObjectType::NONE:
+      out << "NONE";
+      break;
+  }
+  return out;
+}
+
+SceneMesh::SceneMesh(kplgltf::Mesh mesh, kplgltf::GLtfContainer& gLtfContainer)
+    : SceneObject(SceneObjectType::MESH) {
   for (auto& primitive : mesh.primitives) {
     kplgltf::Accessor indices_accessor =
         gLtfContainer.accessors[primitive.indices];
     kplgltf::BufferView indices_bufferView =
         gLtfContainer.bufferViews[indices_accessor.bufferView];
 
-    IndexArray indexArray(GetDataTypeFromGltf(indices_accessor));
-    indexArray.count_ = indices_accessor.count;
+    IndexArray indexArray;
     auto pos = gLtfContainer.buffers[indices_bufferView.buffer].data.begin() +
                indices_bufferView.byteOffset;
-
-    indexArray.GetData().resize(indices_bufferView.byteLength);
+    indexArray.data_.resize(indices_bufferView.byteLength);
     std::copy(
-        pos, pos + indices_bufferView.byteLength, indexArray.GetData().begin());
+        pos, pos + indices_bufferView.byteLength, indexArray.data_.begin());
     this->indexArraies_.emplace_back(std::move(indexArray));
 
     for (auto& attribute : primitive.attributes) {
@@ -26,8 +40,7 @@ SceneMesh::SceneMesh(
       kplgltf::BufferView attribute_bufferView =
           gLtfContainer.bufferViews[attribute_accessor.bufferView];
 
-      VertexArray vertexArray(GetDataTypeFromGltf(attribute_accessor));
-      vertexArray.count_ = attribute_accessor.count;
+      VertexArray vertexArray;
       if (attribute.first.compare("POSITION") == 0)
         vertexArray.attribute_ = VertexAttribute::POSITION;
       if (attribute.first.compare("NORMAL") == 0)
@@ -38,12 +51,10 @@ SceneMesh::SceneMesh(
       auto pos =
           gLtfContainer.buffers[attribute_bufferView.buffer].data.begin() +
           attribute_bufferView.byteOffset;
-
-      vertexArray.GetData().resize(attribute_bufferView.byteLength);
+      vertexArray.data_.resize(attribute_bufferView.byteLength);
       std::copy(
           pos, pos + attribute_bufferView.byteLength,
-          vertexArray.GetData().begin());
-      this->vertexArraies_.emplace_back(std::move(vertexArray));
+          vertexArray.data_.begin());
     }
   }
 }

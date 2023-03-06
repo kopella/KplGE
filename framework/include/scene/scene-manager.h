@@ -21,15 +21,17 @@ class SceneManager : IManager {
 
   bool LoadGltfFile(const char* path);
 
- private:
-  void dump(std::ostream& out) {
+  friend std::ostream& operator<<(std::ostream& out, SceneManager& manager) {
     out << "Root nodes: " << std::endl;
     out << "------ " << std::endl;
-    for (size_t i = 0; i < roots_.size(); ++i) {
+    for (size_t i = 0; i < manager.roots_.size(); ++i) {
       out << "Root " << i << " : " << std::endl;
+      out << manager.roots_[i] << std::endl;
     }
+    return out;
   }
 
+ private:
   bool LoadGltfNode(
       SceneNode& parent, std::vector<kplgltf::GltfId>& nodeIds,
       kplgltf::GLtfContainer& gLtfContainer);

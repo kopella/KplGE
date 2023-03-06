@@ -4,10 +4,10 @@
 using namespace kplge;
 
 int main() {
-  std::cout << "Scene Manager Test: " << std::endl;
-
   SceneManager* sceneManager = new SceneManager();
-  sceneManager->LoadGltfFile(
-      "test/mesh-test.gltf");
+  sceneManager->LoadGltfFile("test/AntiqueCamera/AntiqueCamera.gltf");
+  std::cout << "Scene Manager Test: " << std::endl;
+  std::cout << *sceneManager;
+  delete sceneManager;
   return 0;
 }

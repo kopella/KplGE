@@ -1,70 +1,87 @@
 #pragma once
 
+#include <vcruntime.h>
+#include <ostream>
 #include <vector>
 
+#include "scene-type.h"
+#include "scene-loader.h"
 #include "scene-object.h"
 
 namespace kplge {
-enum class IndexDataType {
-  I8,
-  I16,
-  I32,
-};
-
-enum class VertexDataType {
-  VEC2F,
-  VEC3F,
-  VEC4F,
-  VEC2D,
-  VEC3D,
-  VEC4D,
-};
-
-enum class VertexAttribute {
-  POSITION,
-  NORMAL,
-  TEXCOORD,
-  TANGENT,
-};
-
-enum class PrimitiveMode {
-  POINTS = 0,
-  LINES = 1,
-  LINE_LOOP = 2,
-  LINE_STRIP = 3,
-  TRIANGLES = 4,
-  TRIANGLE_STRIP = 5,
-  TRIANGLE_FAN = 6,
-};
 
 class IndexArray {
+ public:
+  size_t count_;
+
  private:
-  IndexDataType dataType_;
+  DataType dataType_;
   std::vector<unsigned char> data_;
 
  public:
-  IndexArray(IndexDataType dataType) : dataType_(dataType) {}
+  IndexArray(DataType dataType) : dataType_(dataType) {}
+
+  std::vector<unsigned char>& GetData() { return data_; }
+
+  friend std::ostream& operator<<(std::ostream& out, IndexArray& array) {
+    out << " - "
+        << "Count: " << array.count_ << std::endl;
+    out << " - "
+        << "Data Type: " << array.dataType_ << std::endl;
+    return out;
+  }
 };
 
 class VertexArray {
- private:
+ public:
+  PrimitiveMode primitiveMode_;
   VertexAttribute attribute_;
-  VertexDataType dataType_;
+  size_t count_;
+
+ private:
+  DataType dataType_;
   std::vector<unsigned char> data_;
 
  public:
-  VertexArray(VertexAttribute attribute, VertexDataType dataType)
-      : attribute_(attribute), dataType_(dataType) {}
+  VertexArray(DataType dataType) : dataType_(dataType) {}
+
+  std::vector<unsigned char>& GetData() { return data_; }
+
+  friend std::ostream& operator<<(std::ostream& out, VertexArray& array) {
+    out << " - "
+        << "------" << std::endl;
+    out << " - "
+        << "Primitive mode: " << array.primitiveMode_ << std::endl;
+    out << " - "
+        << "Attribute: " << array.attribute_ << std::endl;
+    out << " - "
+        << "Count: " << array.count_ << std::endl;
+    out << " - "
+        << "Data Type: " << array.dataType_ << std::endl;
+    return out;
+  }
 };
 
 class SceneMesh : public SceneObject {
- public:
-  SceneMesh(){};
-  SceneMesh(PrimitiveMode mode) : primitiveMode_(mode) {}
-
  private:
   std::vector<IndexArray> indexArraies_;
   std::vector<VertexArray> vertexArraies_;
-  PrimitiveMode primitiveMode_;
+
+ public:
+  SceneMesh(){};
+
+  SceneMesh(kplgltf::Mesh mesh, kplgltf::GLtfContainer& gLtfContainer);
+
+  friend std::ostream& operator<<(std::ostream& out, SceneMesh& mesh) {
+    out << "Index arraies count: " << mesh.indexArraies_.size() << std::endl;
+    for (auto& indexArray : mesh.indexArraies_) {
+      out << indexArray;
+    }
+    out << "Vertex arraies count: " << mesh.vertexArraies_.size() << std::endl;
+    for (auto& vertexArray : mesh.vertexArraies_) {
+      out << vertexArray;
+    }
+    return out;
+  }
 };
 }  // namespace kplge

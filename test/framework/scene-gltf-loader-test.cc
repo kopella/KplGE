@@ -8,7 +8,7 @@ int main() {
   GltfLoader gltfLoader;
   GLtfContainer gLtfContainer{};
   if (!gltfLoader.ParseGltfFile(
-          gLtfContainer, "test/mesh-test.gltf"))
+          gLtfContainer, "test/AntiqueCamera/AntiqueCamera.gltf"))
     std::cout << "Failed to parse file";
   else
     std::cout << gLtfContainer;

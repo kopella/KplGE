@@ -1,4 +1,4 @@
-add_library(scene scene-manager.cc scene-object.cc scene-node.cc)
+add_library(scene scene-manager.cc scene-type.cc scene-object.cc scene-node.cc)
 
 target_include_directories(scene PRIVATE
     "${KPL_IDGEN_INCLUDE_DIR}"

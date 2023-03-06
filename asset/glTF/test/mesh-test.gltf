@@ -2,6 +2,7 @@
     "scene": 0,
     "scenes": [
         {
+            "name": "scene_o",
             "nodes": [
                 0
             ]
