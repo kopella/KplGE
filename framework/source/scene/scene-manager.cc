@@ -39,24 +39,36 @@ bool SceneManager::LoadGltfNode(
         node.camera == kplgltf::INVALID_ID &&
         node.skin == kplgltf::INVALID_ID) {
       SceneNode newNode = SceneNode(node.name);
-      std::cout << "sign: " << std::endl;
+      std::cout << node.name << std::endl;
       if (!node.children.empty()) {
         LoadGltfNode(newNode, node.children, gLtfContainer);
       }
-
       parent.GetChildren().emplace_back(std::move(newNode));
     }
 
     // Mesh:
     if (node.mesh != kplgltf::INVALID_ID) {
       SceneMeshNode meshNode = SceneMeshNode(node.name);
-      std::cout << "test: mesh" << std::endl;
       if (!node.children.empty()) {
-        // LoadGltfNode(meshNode, node.children, gLtfContainer);
+        LoadGltfMeshNode(meshNode, node.children, gLtfContainer);
       }
-
       parent.GetMeshNodes().emplace_back(std::move(meshNode));
     }
+  }
+
+  return 1;
+}
+
+bool SceneManager::LoadGltfMeshNode(
+    SceneMeshNode& parent, std::vector<kplgltf::GltfId>& nodeIds,
+    kplgltf::GLtfContainer& gLtfContainer) {
+  for (auto& nodeId : nodeIds) {
+    auto& node = gLtfContainer.nodes[nodeId];
+    SceneMeshNode meshNode = SceneMeshNode(node.name);
+    if (!node.children.empty()) {
+      LoadGltfMeshNode(meshNode, node.children, gLtfContainer);
+    }
+    parent.GetMeshNodes().emplace_back(std::move(meshNode));
   }
 
   return 1;

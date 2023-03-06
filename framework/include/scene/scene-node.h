@@ -23,7 +23,7 @@ class SceneBaseNode {
 
 class SceneMeshNode : public SceneBaseNode {
  protected:
-  std::shared_ptr<SceneMesh> mesh_{};
+  // std::shared_ptr<SceneMesh> mesh_{};
   std::vector<SceneMeshNode> meshNodes_{};
 
   Matrix4X4f transform_;
@@ -32,7 +32,7 @@ class SceneMeshNode : public SceneBaseNode {
   SceneMeshNode() {}
   SceneMeshNode(std::string name) : SceneBaseNode(name) {}
 
-  std::shared_ptr<SceneMesh>& GetObject() { return mesh_; }
+  // std::shared_ptr<SceneMesh>& GetObject() { return mesh_; }
   std::vector<SceneMeshNode>& GetChildren() { return meshNodes_; }
   std::vector<SceneMeshNode>& GetMeshNodes() { return meshNodes_; }
 };

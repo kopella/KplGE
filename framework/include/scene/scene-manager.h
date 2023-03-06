@@ -33,5 +33,9 @@ class SceneManager : IManager {
   bool LoadGltfNode(
       SceneNode& parent, std::vector<kplgltf::GltfId>& nodeIds,
       kplgltf::GLtfContainer& gLtfContainer);
+
+  bool LoadGltfMeshNode(
+      SceneMeshNode& parent, std::vector<kplgltf::GltfId>& nodeIds,
+      kplgltf::GLtfContainer& gLtfContainer);
 };
 }  // namespace kplge
