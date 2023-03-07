@@ -34,6 +34,7 @@ class SceneMeshNode : public SceneBaseNode {
   SceneMeshNode(std::string name) : SceneBaseNode(name) {}
 
   std::shared_ptr<SceneMesh>& GetObject() { return mesh_; }
+  std::shared_ptr<SceneMesh>& GetMesh() { return mesh_; }
   std::vector<SceneMeshNode>& GetChildren() { return meshNodes_; }
   std::vector<SceneMeshNode>& GetMeshNodes() { return meshNodes_; }
 

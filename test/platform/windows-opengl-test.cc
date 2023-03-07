@@ -8,24 +8,28 @@
 using namespace kplge;
 
 int main() {
-  WindowsApplication* windows_application = new WindowsApplication();
-  GraphicManager* wgl_manager = new WglManager();
+  WindowsApplication* windowsApplication = new WindowsApplication();
+  GraphicManager* wglManager = new WglManager();
+  SceneManager* sceneManager = new SceneManager();
 
-  windows_application->RegisterManager(wgl_manager);
+  windowsApplication->RegisterManager(wglManager);
+  windowsApplication->RegisterManager(sceneManager);
+
+  sceneManager->LoadGltfFile("test/mesh-test.gltf");
 
   erroc code = KPL_NO_ERR;
 
-  code = windows_application->Initialize();
+  code = windowsApplication->Initialize();
   runtime_info("WindowsApplication", "Initialize result: %x\n", code);
 
-  windows_application->ShowMainWindow();
-  while (!windows_application->CheckQuitTag()) {
-    windows_application->Tick();
+  windowsApplication->ShowMainWindow();
+  while (!windowsApplication->CheckQuitTag()) {
+    windowsApplication->Tick();
   }
 
-  code = windows_application->Finalize();
+  code = windowsApplication->Finalize();
   runtime_info("WindowsApplication", "Finalize result: %x\n", code);
 
-  delete windows_application;
+  delete windowsApplication;
   return 0;
 }

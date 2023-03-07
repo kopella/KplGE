@@ -11,8 +11,10 @@ if(${KPLGE_TARGET_PLATFORM} MATCHES "windows")
         target_include_directories(windows-opengl-test PRIVATE "${KPL_FRAMEWORK_INCLUDE_DIR}/common")
         target_include_directories(windows-opengl-test PRIVATE "${KPL_FRAMEWORK_INCLUDE_DIR}/scene")
         target_link_libraries(windows-opengl-test
+            utility
             framework
             platform
+            scene
         )
     elseif(${KPLGE_GRAPHIC_API} MATCHES "directx11")
         add_executable(windows-dx11-test

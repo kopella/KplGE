@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vcruntime.h>
 #include <ostream>
 
 #include "../interface/manager.h"
@@ -8,7 +7,7 @@
 #include "scene-loader.h"
 
 namespace kplge {
-class SceneManager : IManager {
+class SceneManager : public IManager {
  private:
   std::vector<SceneNode> roots_;
 
@@ -17,7 +16,7 @@ class SceneManager : IManager {
   erroc Finalize() override;
   erroc Tick() override;
 
-  SceneNode& GetSceneRoot(size_t n) { return roots_.at(n); }
+  SceneNode& GetSceneRenderRoot(size_t n) { return roots_.at(n); }
 
   bool LoadGltfFile(const char* path);
 

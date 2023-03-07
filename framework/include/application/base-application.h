@@ -6,6 +6,7 @@
 #include "../interface/manager.h"
 #include "graphic-config.h"
 #include "graphic-manager.h"
+#include "scene-manager.h"
 
 namespace kplge {
 class BaseApplication : public IApplication {
@@ -14,25 +15,28 @@ class BaseApplication : public IApplication {
   ~BaseApplication() override = default;
 
   explicit BaseApplication(GraphicConfig& graphic_config)
-      : graphic_config_(graphic_config) {}
+      : graphicConfig_(graphic_config) {}
 
   erroc Initialize() override;
   erroc Finalize() override;
   erroc Tick() override;
 
-  bool CheckQuitTag() { return tag_quit_; }
+  bool CheckQuitTag() { return tagQuit_; }
 
   void RegisterManager(GraphicManager* manager);
+  void RegisterManager(SceneManager* manager);
 
-  GraphicManager* GetGraphicManager() { return graphic_manager_; }
+  GraphicManager* GetGraphicManager() { return p_graphicManager_; }
+  SceneManager* GetSceneManager() { return p_sceneManager_; }
 
  protected:
-  bool tag_quit_{false};
-  void ChangeQuitTag() { tag_quit_ = true; }
+  bool tagQuit_{false};
+  void ChangeQuitTag() { tagQuit_ = true; }
 
-  GraphicConfig graphic_config_;
+  GraphicConfig graphicConfig_;
 
-  GraphicManager* graphic_manager_{};
+  GraphicManager* p_graphicManager_;
+  SceneManager* p_sceneManager_;
 
   std::vector<IManager*> managers_;
 };

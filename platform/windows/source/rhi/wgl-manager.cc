@@ -15,7 +15,7 @@ erroc WglManager::Finalize() {
 }
 
 erroc WglManager::Tick() {
-  if (!DrawScene()) return GFX_ERR_RUNT;
+  if (!Draw()) return GFX_ERR_RUNT;
   SwapBuffers(h_gl_dc_);
   return KPL_NO_ERR;
 }

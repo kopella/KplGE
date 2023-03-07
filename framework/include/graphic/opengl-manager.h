@@ -1,5 +1,6 @@
 #pragma once
 #include "graphic-manager.h"
+#include "scene-node.h"
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -15,17 +16,24 @@ class OpenGLManager : public GraphicManager {
   erroc Finalize() override;
   erroc Tick() override;
 
-  /* OpenGL tool functions*/
-  bool DrawScene();
+  bool Clear() override;
+  bool Draw() override;
 
   GLuint LoadShader();
   GLuint LoadVertex();
-  GLuint LoadTexture();
 
  private:
   virtual bool GetFunctions() = 0;
   virtual bool CreateContext() = 0;
   virtual bool DeleteContext() = 0;
+
+  bool InitializeBuffers();
+  bool InitializeShaders();
+
+  bool RenderBuffers();
+
+  bool LoadNode(SceneNode& node);
+  bool LoadMeshNode(SceneMeshNode& node);
 
  protected:
   /* OpenGL functions pointers*/

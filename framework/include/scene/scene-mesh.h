@@ -13,9 +13,9 @@ namespace kplge {
 class IndexArray {
  public:
   size_t count_;
+  DataType dataType_;
 
  private:
-  DataType dataType_;
   std::vector<unsigned char> data_;
 
  public:
@@ -37,9 +37,9 @@ class VertexArray {
   PrimitiveMode primitiveMode_;
   VertexAttribute attribute_;
   size_t count_;
+  DataType dataType_;
 
  private:
-  DataType dataType_;
   std::vector<unsigned char> data_;
 
  public:
@@ -71,6 +71,9 @@ class SceneMesh : public SceneObject {
   SceneMesh(){};
 
   SceneMesh(kplgltf::Mesh mesh, kplgltf::GLtfContainer& gLtfContainer);
+
+  std::vector<IndexArray> GetIndexArraies() { return indexArraies_; }
+  std::vector<VertexArray> GetVertexArraies() { return vertexArraies_; }
 
   friend std::ostream& operator<<(std::ostream& out, SceneMesh& mesh) {
     out << "Index arraies count: " << mesh.indexArraies_.size() << std::endl;

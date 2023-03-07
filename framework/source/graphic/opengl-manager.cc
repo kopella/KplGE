@@ -6,22 +6,105 @@
 #include <sstream>
 #include <iostream>
 
+#include "scene-manager.h"
+
 namespace kplge {
 erroc OpenGLManager::Initialize() { return KPL_NO_ERR; }
 erroc OpenGLManager::Finalize() { return KPL_NO_ERR; }
 erroc OpenGLManager::Tick() { return KPL_NO_ERR; }
 
-bool OpenGLManager::DrawScene() {
+bool OpenGLManager::Draw() {
   glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   GLuint shader_prog = LoadShader();
-  GLuint v_array_obj = LoadVertex();
+  InitializeBuffers();
 
   glUseProgram(shader_prog);
-  glBindVertexArray(v_array_obj);
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
+  return 1;
+}
+
+bool OpenGLManager::Clear() { return 1; }
+
+bool OpenGLManager::InitializeBuffers() {
+  auto& root = p_sceneManager_->GetSceneRenderRoot(0);
+  LoadNode(root);
+  return 1;
+}
+
+bool OpenGLManager::LoadNode(SceneNode& node) {
+  for (auto& child : node.GetChildren()) {
+    if (!child.GetChildren().empty()) {
+      LoadNode(child);
+    }
+    if (!child.GetMeshNodes().empty()) {
+      for (auto& meshNode : child.GetMeshNodes()) {
+        LoadMeshNode(meshNode);
+      }
+    }
+  }
+  return 1;
+}
+
+bool OpenGLManager::LoadMeshNode(SceneMeshNode& node) {
+  auto mesh = node.GetMesh();
+  for (auto indexArray : mesh->GetIndexArraies()) {
+    GLuint ebo;
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER, indexArray.GetData().size(),
+        &indexArray.GetData().front(), GL_STATIC_DRAW);
+  }
+  for (auto vertexArray : mesh->GetVertexArraies()) {
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(
+        GL_ARRAY_BUFFER, vertexArray.GetData().size(),
+        &vertexArray.GetData().front(), GL_STATIC_DRAW);
+
+    GLuint vaa;
+    switch (vertexArray.attribute_) {
+      case VertexAttribute::POSITION:
+        vaa = 0;
+        break;
+      case VertexAttribute::NORMAL:
+        vaa = 1;
+        break;
+      case VertexAttribute::TEXCOORD:
+        vaa = 2;
+        break;
+      case VertexAttribute::TANGENT:
+        vaa = 3;
+        break;
+        break;
+    }
+
+    GLuint size;
+    switch (vertexArray.dataType_) {
+      case DataType::VEC2F:
+        size = 2;
+        break;
+      case DataType::VEC3F:
+        size = 3;
+        break;
+      case DataType::VEC4F:
+        size = 4;
+        break;
+    }
+
+    glEnableVertexAttribArray(vaa);
+    glVertexAttribPointer(vaa, size, GL_FLOAT, GL_TRUE, 0, (void*)0);
+  }
+
+  if (!node.GetMeshNodes().empty()) {
+    for (auto& meshNode : node.GetMeshNodes()) {
+      LoadMeshNode(meshNode);
+    }
+  }
   return 1;
 }
 
@@ -95,7 +178,5 @@ GLuint OpenGLManager::LoadVertex() {
 
   return v_array_obj;
 }
-
-GLuint OpenGLManager::LoadTexture() { return 0; }
 
 }  // namespace kplge
