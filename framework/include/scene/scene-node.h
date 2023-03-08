@@ -6,13 +6,14 @@
 
 #include "kplcalct.h"
 
+#include "private/matrix.h"
 #include "scene-mesh.h"
 
 using namespace kplutl;
 
 namespace kplge {
 class SceneBaseNode {
- protected:
+ public:
   std::string name_{};
 
  public:
@@ -51,16 +52,20 @@ class SceneMeshNode : public SceneBaseNode {
   }
 };
 
+class SceneCameraNode : public SceneBaseNode {};
+
 class SceneNode : public SceneBaseNode {
  private:
   std::vector<SceneNode> children_{};
   std::vector<SceneMeshNode> meshNodes{};
+  std::vector<SceneCameraNode> meshCameraNodes{};
 
  public:
   SceneNode(std::string name) : SceneBaseNode(name) {}
 
   std::vector<SceneNode>& GetChildren() { return children_; }
   std::vector<SceneMeshNode>& GetMeshNodes() { return meshNodes; }
+  std::vector<SceneCameraNode>& GetCameraNodes() { return meshCameraNodes; }
 
   friend std::ostream& operator<<(std::ostream& out, SceneNode& node) {
     out << "Scean node: " << node.name_ << std::endl;

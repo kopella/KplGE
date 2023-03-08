@@ -158,6 +158,15 @@ inline void matrix_transpose(
 #endif
 }
 
+template <typename T>
+inline void vertex_transform(const MatrixCT<T, 4, 4>& min, VectorCT<T, 4>& v) {
+#ifdef ENABLE_ISPC
+  ispc::transform(min, v);
+#else
+  transform(min, v);
+#endif
+}
+
 /* operators */
 
 /* + */
@@ -300,6 +309,12 @@ std::ostream& operator<<(std::ostream& out, MatrixCT<T, ROWS, COLS>&& mat) {
   out << std::endl;
   for (size_t r = 0; r < ROWS; ++r) out << mat[r] << std::endl;
   return out;
+}
+
+template <typename T>
+VectorCT<T, 4> transform(const MatrixCT<T, 4, 4>& min, VectorCT<T, 4>& v) {
+  vertex_transform(min, v);
+  return v;
 }
 
 }  // namespace kplutl

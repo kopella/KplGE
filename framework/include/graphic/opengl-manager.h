@@ -27,13 +27,16 @@ class OpenGLManager : public GraphicManager {
   virtual bool CreateContext() = 0;
   virtual bool DeleteContext() = 0;
 
-  bool InitializeBuffers();
   bool InitializeShaders();
-
+  
+  bool InitializeBuffers();
   bool RenderBuffers();
 
   bool LoadNode(SceneNode& node);
   bool LoadMeshNode(SceneMeshNode& node);
+
+ private:
+  std::vector<GLuint> buffers_;
 
  protected:
   /* OpenGL functions pointers*/

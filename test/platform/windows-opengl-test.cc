@@ -17,6 +17,8 @@ int main() {
 
   sceneManager->LoadGltfFile("test/mesh-test.gltf");
 
+  std::cout << *sceneManager;
+
   erroc code = KPL_NO_ERR;
 
   code = windowsApplication->Initialize();

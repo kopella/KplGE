@@ -9,16 +9,34 @@
 #include "scene-manager.h"
 
 namespace kplge {
-erroc OpenGLManager::Initialize() { return KPL_NO_ERR; }
+erroc OpenGLManager::Initialize() {
+  // Set the depth buffer to be entirely cleared to 1.0 values.
+  glClearDepth(1.0f);
+
+  // Enable depth testing.
+  glEnable(GL_DEPTH_TEST);
+
+  // Set the polygon winding to front facing for the right handed system.
+  glFrontFace(GL_CCW);
+
+  // Enable back face culling.
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+
+  InitializeBuffers();
+  return KPL_NO_ERR;
+}
 erroc OpenGLManager::Finalize() { return KPL_NO_ERR; }
-erroc OpenGLManager::Tick() { return KPL_NO_ERR; }
+erroc OpenGLManager::Tick() {
+  if (!Draw()) return GFX_ERR_RUNT;
+  return KPL_NO_ERR;
+}
 
 bool OpenGLManager::Draw() {
   glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   GLuint shader_prog = LoadShader();
-  InitializeBuffers();
 
   glUseProgram(shader_prog);
   glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -26,7 +44,13 @@ bool OpenGLManager::Draw() {
   return 1;
 }
 
-bool OpenGLManager::Clear() { return 1; }
+bool OpenGLManager::Clear() {
+  // Set the color to clear the screen to.
+  glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+  // Clear the screen and depth buffer.
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  return 1;
+}
 
 bool OpenGLManager::InitializeBuffers() {
   auto& root = p_sceneManager_->GetSceneRenderRoot(0);
@@ -34,16 +58,16 @@ bool OpenGLManager::InitializeBuffers() {
   return 1;
 }
 
+bool OpenGLManager::RenderBuffers() {}
+
 bool OpenGLManager::LoadNode(SceneNode& node) {
   for (auto& child : node.GetChildren()) {
     if (!child.GetChildren().empty()) {
       LoadNode(child);
     }
-    if (!child.GetMeshNodes().empty()) {
-      for (auto& meshNode : child.GetMeshNodes()) {
-        LoadMeshNode(meshNode);
-      }
-    }
+  }
+  for (auto& meshNode : node.GetMeshNodes()) {
+    LoadMeshNode(meshNode);
   }
   return 1;
 }
@@ -57,6 +81,8 @@ bool OpenGLManager::LoadMeshNode(SceneMeshNode& node) {
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER, indexArray.GetData().size(),
         &indexArray.GetData().front(), GL_STATIC_DRAW);
+
+    buffers_.push_back(ebo);
   }
   for (auto vertexArray : mesh->GetVertexArraies()) {
     GLuint vbo;
@@ -65,6 +91,8 @@ bool OpenGLManager::LoadMeshNode(SceneMeshNode& node) {
     glBufferData(
         GL_ARRAY_BUFFER, vertexArray.GetData().size(),
         &vertexArray.GetData().front(), GL_STATIC_DRAW);
+
+    buffers_.push_back(vbo);
 
     GLuint vaa;
     switch (vertexArray.attribute_) {

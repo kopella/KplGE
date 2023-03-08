@@ -6,3 +6,12 @@ export void cross(
 		v3fout[index] = vf3in_a[index_a] * v3fin_b[index_b] - vf3in_a[index_b] * v3fin_b[index_a];
 	}
 }
+
+export void transform(uniform const float mfin[16], uniform float vf[4]){
+    foreach(index = 0 ... 4) {
+        vf[index] = (vf[0] * mfin[index]) 
+            + (vf[1] * mfin[index + 4]) 
+            + (vf[2] * mfin[index + 8]) 
+            + (vf[3] * mfin[index + 12]);
+    }
+}

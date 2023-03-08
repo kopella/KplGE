@@ -1,21 +1,27 @@
 #include "wgl-manager.h"
 
+#include "opengl-manager.h"
 #include "windows-application.h"
 
 namespace kplge {
 erroc WglManager::Initialize() {
   if (!CreateContext()) return GFX_ERR_INIT;
   if (!GetFunctions()) return GFX_ERR_INIT;
+
+  if (OpenGLManager::Initialize() != KPL_NO_ERR) return GFX_ERR_INIT;
   return KPL_NO_ERR;
 }
 
 erroc WglManager::Finalize() {
+  if (OpenGLManager::Finalize() != KPL_NO_ERR) return GFX_ERR_FINA;
+
   if (!DeleteContext()) return GFX_ERR_FINA;
   return KPL_NO_ERR;
 }
 
 erroc WglManager::Tick() {
-  if (!Draw()) return GFX_ERR_RUNT;
+  if (OpenGLManager::Tick() != KPL_NO_ERR) return GFX_ERR_RUNT;
+
   SwapBuffers(h_gl_dc_);
   return KPL_NO_ERR;
 }

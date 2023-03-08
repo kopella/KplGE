@@ -10,13 +10,7 @@
     ],
     "nodes": [
         {
-            "name": "node_0",
-            "children": [
-                1
-            ]
-        },
-        {
-            "name": "node_1",
+            "name": "mesh_node_1",
             "mesh": 0
         }
     ],

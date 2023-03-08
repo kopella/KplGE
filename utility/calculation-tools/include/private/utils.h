@@ -6,7 +6,6 @@ namespace kplutl {
 #ifdef ENABLE_ISPC
 namespace ispc {
 extern "C" {
-
 #endif
 /* basic */
 
@@ -28,6 +27,7 @@ extern void sqrt_foreach(const float* vfin, float* vfout, const size_t count);
 
 extern void cross(
     const float v3fin_a[3], const float v3fin_b[3], float v3fout[3]);
+extern void transform(const float mfin[16], float vf[4]);
 
 /* matrix */
 
@@ -38,4 +38,4 @@ extern void transpose(
 }
 }  // namespace ispc
 #endif
-}  // namespace kplge
+}  // namespace kplutl
