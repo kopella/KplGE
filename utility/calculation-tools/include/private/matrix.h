@@ -1,4 +1,5 @@
 #pragma once
+#include <vcruntime.h>
 #include <cassert>
 #include <cmath>
 
@@ -150,7 +151,7 @@ inline void matrix_sqrt(
 
 template <typename T, size_t ROWS, size_t COLS>
 inline void matrix_transpose(
-    const MatrixCT<T, ROWS, COLS>& min, MatrixCT<T, ROWS, COLS>& mout) {
+    const MatrixCT<T, ROWS, COLS>& min, MatrixCT<T, COLS, ROWS>& mout) {
 #ifdef ENABLE_ISPC
   ispc::transpose(min, mout, ROWS, COLS);
 #else
@@ -283,9 +284,30 @@ MatrixCT<T, ROWS, COLS> abs(const MatrixCT<T, ROWS, COLS>& mat) {
 }
 
 template <typename T, size_t ROWS, size_t COLS>
-MatrixCT<T, ROWS, COLS> transpose(const MatrixCT<T, ROWS, COLS>& mat) {
+MatrixCT<T, COLS, ROWS> transpose(const MatrixCT<T, ROWS, COLS>& mat) {
   MatrixCT<T, COLS, ROWS> res;
   matrix_transpose(mat, res);
+  return res;
+}
+
+template <typename T>
+VectorCT<T, 4> transform(
+    const MatrixCT<T, 4, 4>& min, const VectorCT<T, 4>& v) {
+  VectorCT<T, 4> res{v};
+  vertex_transform(min, res);
+  return res;
+}
+
+template <typename T, size_t Da, size_t Db, size_t Dc>
+MatrixCT<T, Da, Dc> multiply(
+    const MatrixCT<T, Da, Db>& lhs, const MatrixCT<T, Db, Dc>& rhs) {
+  MatrixCT<T, Da, Dc> res;
+  MatrixCT<T, Dc, Db> rhs_t{transpose(rhs)};
+  for (size_t r = 0; r < Da; ++r) {
+    for (size_t c = 0; c < Dc; ++c) {
+      res.data[r][c] = dot(lhs.data[r], rhs_t.data[c]);
+    }
+  }
   return res;
 }
 
@@ -309,12 +331,6 @@ std::ostream& operator<<(std::ostream& out, MatrixCT<T, ROWS, COLS>&& mat) {
   out << std::endl;
   for (size_t r = 0; r < ROWS; ++r) out << mat[r] << std::endl;
   return out;
-}
-
-template <typename T>
-VectorCT<T, 4> transform(const MatrixCT<T, 4, 4>& min, VectorCT<T, 4>& v) {
-  vertex_transform(min, v);
-  return v;
 }
 
 }  // namespace kplutl

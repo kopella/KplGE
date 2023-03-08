@@ -9,9 +9,9 @@ export void cross(
 
 export void transform(uniform const float mfin[16], uniform float vf[4]){
     foreach(index = 0 ... 4) {
-        vf[index] = (vf[0] * mfin[index]) 
-            + (vf[1] * mfin[index + 4]) 
-            + (vf[2] * mfin[index + 8]) 
-            + (vf[3] * mfin[index + 12]);
+        vf[index] = (vf[0] * mfin[index*4]) 
+            + (vf[1] * mfin[index*4 + 1]) 
+            + (vf[2] * mfin[index*4 + 2]) 
+            + (vf[3] * mfin[index*4 + 3]);
     }
 }

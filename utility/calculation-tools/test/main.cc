@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "kplcalct.h"
+#include "private/matrix.h"
 #include "private/vector.h"
 
 using namespace kplutl;
@@ -44,16 +45,29 @@ int main() {
   std::vector<float> mat_vec{1, 4, 7, 2, 5, 8, 3, 6, 9};
   Matrix3X3f mat_3{mat_vec.begin(), mat_vec.end()};
 
+  Matrix4X4f mat_transform{
+      {1, 0, 0, 1}, {0, 1, 0, 1}, {0, 0, 1, 1}, {0, 0, 0, 1}};
+
+  Vector4f vec_transform{1, 1, 1, 1};
+
   std::cout << "mat_0: " << mat_0;
   std::cout << "mat_1: " << mat_1;
   std::cout << "mat_2: " << mat_2;
   std::cout << "mat_3: " << mat_3;
+  std::cout << "mat_transform: " << mat_transform;
+  std::cout << "vec_transform: " << vec_transform << std::endl;
 
   std::cout << "mat_1 + mat_2: " << mat_1 + mat_2;
   std::cout << "mat_1 - mat_2: " << mat_1 - mat_2;
   std::cout << "mat_1 * mat_2: " << mat_1 * mat_2;
   std::cout << "mat_1 / mat_2: " << mat_1 / mat_2;
 
-  std::cout << "abs(mat_0): " << abs(mat_0);
+  std::cout << "dot(mat_1[0], mat_2[0]): " << dot(mat_1[0], mat_2[0])
+            << std::endl;
+
+  std::cout << "abs(mat_1 - mat_2): " << abs(mat_1 - mat_2);
   std::cout << "transpose(mat_1):" << transpose(mat_1);
+  std::cout << "transform(mat_transform, vec_transform): "
+            << transform(mat_transform, vec_transform) << std::endl;
+  std::cout << "multiply(mat_1, mat_2):" << multiply(mat_1, mat_2);
 }
