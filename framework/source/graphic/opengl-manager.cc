@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iostream>
 
+#include "asset-loader.h"
 #include "scene-manager.h"
 
 namespace kplge {
@@ -22,7 +23,8 @@ erroc OpenGLManager::Initialize() {
   // Enable back face culling.
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
-
+  
+  InitializeShaders("v_shader.glsl", "f_shader.glsl");
   InitializeBuffers();
   return KPL_NO_ERR;
 }
@@ -36,9 +38,7 @@ bool OpenGLManager::Draw() {
   glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  GLuint shader_prog = LoadShader();
-
-  glUseProgram(shader_prog);
+  glUseProgram(shaderProgram_);
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
   return 1;
@@ -52,13 +52,50 @@ bool OpenGLManager::Clear() {
   return 1;
 }
 
+bool OpenGLManager::InitializeShaders(const char* vsFile, const char* fsFile) {
+  AssetLoader assetLoader;
+  assetLoader.AddSearchPath("asset/shader/");
+  std::string vertexShaderBuffer{reinterpret_cast<char*>(
+      assetLoader.SyncLoadText(vsFile).get_data_pointer())};
+  if (vertexShaderBuffer.empty()) return 0;
+  std::string fragmentShaderBuffer{reinterpret_cast<char*>(
+      assetLoader.SyncLoadText(fsFile).get_data_pointer())};
+  if (fragmentShaderBuffer.empty()) return 0;
+
+  vertexShader_ = glCreateShader(GL_VERTEX_SHADER);
+  fragmentShader_ = glCreateShader(GL_FRAGMENT_SHADER);
+
+  const char* _v_c_str = vertexShaderBuffer.c_str();
+  glShaderSource(vertexShader_, 1, &_v_c_str, NULL);
+  const char* _f_c_str = fragmentShaderBuffer.c_str();
+  glShaderSource(fragmentShader_, 1, &_f_c_str, NULL);
+
+  glCompileShader(vertexShader_);
+  glCompileShader(fragmentShader_);
+
+  shaderProgram_ = glCreateProgram();
+
+  glAttachShader(shaderProgram_, vertexShader_);
+  glAttachShader(shaderProgram_, fragmentShader_);
+
+  glLinkProgram(shaderProgram_);
+
+  return 1;
+}
+
 bool OpenGLManager::InitializeBuffers() {
   auto& root = p_sceneManager_->GetSceneRenderRoot(0);
   LoadNode(root);
   return 1;
 }
 
-bool OpenGLManager::RenderBuffers() {}
+bool OpenGLManager::RenderBuffers() {
+  for (auto dbc : drawBatchContexts_) {
+    glBindVertexArray(dbc.vao);
+  }
+
+  return 1;
+}
 
 bool OpenGLManager::LoadNode(SceneNode& node) {
   for (auto& child : node.GetChildren()) {
@@ -71,6 +108,10 @@ bool OpenGLManager::LoadNode(SceneNode& node) {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     LoadMeshNode(meshNode);
+    DrawBatchContext dbc;
+    dbc.vao = vao;
+    dbc.transform = meshNode.GetTransformMatrix();
+    drawBatchContexts_.emplace_back(std::move(dbc));
   }
   return 1;
 }

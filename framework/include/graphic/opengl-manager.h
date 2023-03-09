@@ -27,8 +27,8 @@ class OpenGLManager : public GraphicManager {
   virtual bool CreateContext() = 0;
   virtual bool DeleteContext() = 0;
 
-  bool InitializeShaders();
-  
+  bool InitializeShaders(const char* vsFile, const char* fsFile);
+
   bool InitializeBuffers();
   bool RenderBuffers();
 
@@ -36,7 +36,17 @@ class OpenGLManager : public GraphicManager {
   bool LoadMeshNode(SceneMeshNode& node);
 
  private:
+  GLuint vertexShader_;
+  GLuint fragmentShader_;
+  GLuint shaderProgram_;
   std::vector<GLuint> buffers_;
+
+  struct DrawBatchContext {
+    GLuint vao;
+    Matrix4X4f transform;
+  };
+
+  std::vector<DrawBatchContext> drawBatchContexts_;
 
  protected:
   /* OpenGL functions pointers*/

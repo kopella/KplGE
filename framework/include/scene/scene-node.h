@@ -17,28 +17,13 @@ class SceneBaseNode {
  public:
   std::string name_{};
 
+  std::vector<Matrix4X4f> transforms_;
+
  public:
   SceneBaseNode() = default;
   SceneBaseNode(const SceneBaseNode& o) = default;
   SceneBaseNode(std::string name) : name_(name) {}
   virtual ~SceneBaseNode() = default;
-};
-
-class SceneMeshNode : public SceneBaseNode {
- protected:
-  std::shared_ptr<SceneMesh> mesh_{};
-  std::vector<SceneMeshNode> meshNodes_{};
-
-  std::vector<Matrix4X4f> transforms_;
-
- public:
-  SceneMeshNode() {}
-  SceneMeshNode(std::string name) : SceneBaseNode(name) {}
-
-  std::shared_ptr<SceneMesh>& GetObject() { return mesh_; }
-  std::shared_ptr<SceneMesh>& GetMesh() { return mesh_; }
-  std::vector<SceneMeshNode>& GetChildren() { return meshNodes_; }
-  std::vector<SceneMeshNode>& GetMeshNodes() { return meshNodes_; }
 
   std::vector<Matrix4X4f>& GetTransforms() { return transforms_; }
 
@@ -50,6 +35,21 @@ class SceneMeshNode : public SceneBaseNode {
     }
     return res;
   }
+};
+
+class SceneMeshNode : public SceneBaseNode {
+ protected:
+  std::shared_ptr<SceneMesh> mesh_{};
+  std::vector<SceneMeshNode> meshNodes_{};
+
+ public:
+  SceneMeshNode() {}
+  SceneMeshNode(std::string name) : SceneBaseNode(name) {}
+
+  std::shared_ptr<SceneMesh>& GetObject() { return mesh_; }
+  std::shared_ptr<SceneMesh>& GetMesh() { return mesh_; }
+  std::vector<SceneMeshNode>& GetChildren() { return meshNodes_; }
+  std::vector<SceneMeshNode>& GetMeshNodes() { return meshNodes_; }
 
   friend std::ostream& operator<<(std::ostream& out, SceneMeshNode& node) {
     out << "Mesh Node: " << node.name_ << std::endl;
@@ -84,6 +84,9 @@ class SceneNode : public SceneBaseNode {
 
   friend std::ostream& operator<<(std::ostream& out, SceneNode& node) {
     out << "Scean node: " << node.name_ << std::endl;
+    if (!node.transforms_.empty()) {
+      out << " - Transform matrix: " << node.GetTransformMatrix();
+    }
     if (!node.children_.empty()) {
       out << "> Children scene nodes: " << std::endl;
       for (auto& child : node.children_) {

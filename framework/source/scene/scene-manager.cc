@@ -45,6 +45,30 @@ bool SceneManager::LoadGltfNode(
         node.camera == kplgltf::INVALID_ID &&
         node.skin == kplgltf::INVALID_ID) {
       SceneNode newNode = SceneNode(node.name);
+      if (!node.matrix.empty()) {
+        newNode.GetTransforms().emplace_back(
+            transpose(Matrix4X4f{node.matrix.begin(), node.matrix.end()}));
+      } else {
+        Matrix4X4f res;
+        identity(res);
+        if (!node.scale.empty())
+          res = multiply(
+              build_scale_matrix(node.scale[0], node.scale[1], node.scale[2]),
+              res);
+        if (!node.rotation.empty())
+          res = multiply(
+              build_rotation_matrix(
+                  node.rotation[0], node.rotation[1], node.rotation[2],
+                  node.rotation[3]),
+              res);
+        if (!node.translation.empty())
+          res = multiply(
+              build_translation_matrix(
+                  node.translation[0], node.translation[1],
+                  node.translation[2]),
+              res);
+        newNode.GetTransforms().emplace_back(std::move(res));
+      }
       if (!node.children.empty()) {
         LoadGltfNode(newNode, node.children, gLtfContainer);
       }
@@ -56,7 +80,7 @@ bool SceneManager::LoadGltfNode(
       SceneMeshNode meshNode = SceneMeshNode(node.name);
       if (!node.matrix.empty()) {
         meshNode.GetTransforms().emplace_back(
-            node.matrix.begin(), node.matrix.end());
+            transpose(Matrix4X4f{node.matrix.begin(), node.matrix.end()}));
       } else {
         Matrix4X4f res;
         identity(res);
