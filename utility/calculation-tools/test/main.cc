@@ -3,6 +3,7 @@
 
 #include "kplcalct.h"
 #include "private/matrix.h"
+#include "private/tools.h"
 #include "private/vector.h"
 
 using namespace kplutl;
@@ -70,4 +71,14 @@ int main() {
   std::cout << "transform(mat_transform, vec_transform): "
             << transform(mat_transform, vec_transform) << std::endl;
   std::cout << "multiply(mat_1, mat_2):" << multiply(mat_1, mat_2);
+
+  std::cout << "build_rotation_matrix"
+               "(0, -0.7071068286895752, 0, 0.7071067690849304): "
+            << build_rotation_matrix(
+                   0, -0.7071068286895752, 0, 0.7071067690849304);
+
+  std::cout << "build_scale_matrix"
+               "(0.5700311064720154, 0.5700311064720154, 0.5700311064720154): "
+            << build_scale_matrix(
+                   0.5700311064720154, 0.5700311064720154, 0.5700311064720154);
 }

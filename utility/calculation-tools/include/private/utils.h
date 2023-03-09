@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vcruntime.h>
 #include "config.h"
 
 namespace kplutl {
@@ -34,6 +35,8 @@ extern void transform(const float mfin[16], float vf[4]);
 extern void transpose(
     const float* mfin_a, float* mfout, const size_t row_count,
     const size_t col_count);
+
+extern void identity(float* mf, const size_t n);
 #ifdef ENABLE_ISPC
 }
 }  // namespace ispc

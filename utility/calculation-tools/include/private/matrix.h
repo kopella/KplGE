@@ -159,6 +159,15 @@ inline void matrix_transpose(
 #endif
 }
 
+template <typename T, size_t D>
+inline void matrix_identity(MatrixCT<T, D, D>& min, const size_t n) {
+#ifdef ENABLE_ISPC
+  ispc::identity(min, n);
+#else
+  identity(min, n);
+#endif
+}
+
 template <typename T>
 inline void vertex_transform(const MatrixCT<T, 4, 4>& min, VectorCT<T, 4>& v) {
 #ifdef ENABLE_ISPC
@@ -290,14 +299,6 @@ MatrixCT<T, COLS, ROWS> transpose(const MatrixCT<T, ROWS, COLS>& mat) {
   return res;
 }
 
-template <typename T>
-VectorCT<T, 4> transform(
-    const MatrixCT<T, 4, 4>& min, const VectorCT<T, 4>& v) {
-  VectorCT<T, 4> res{v};
-  vertex_transform(min, res);
-  return res;
-}
-
 template <typename T, size_t Da, size_t Db, size_t Dc>
 MatrixCT<T, Da, Dc> multiply(
     const MatrixCT<T, Da, Db>& lhs, const MatrixCT<T, Db, Dc>& rhs) {
@@ -308,6 +309,19 @@ MatrixCT<T, Da, Dc> multiply(
       res.data[r][c] = dot(lhs.data[r], rhs_t.data[c]);
     }
   }
+  return res;
+}
+
+template <typename T, size_t D>
+void identity(MatrixCT<T, D, D>& mat) {
+  matrix_identity(mat, D);
+}
+
+template <typename T>
+VectorCT<T, 4> transform(
+    const MatrixCT<T, 4, 4>& min, const VectorCT<T, 4>& v) {
+  VectorCT<T, 4> res{v};
+  vertex_transform(min, res);
   return res;
 }
 
