@@ -43,13 +43,13 @@ Buffer AssetLoader::SyncLoadText(const char *path) {
     uint8_t *data = new uint8_t[length + 1];
     fread(data, length, 1, static_cast<FILE *>(fp));
 
-    runtime_info(
-        "AssetLoader", "Read text file '%s' with %zu bytes\n", path, length);
-
     data[length] = '\0';
     buffer.set_data_by_pointer(data, length + 1);
 
     ColseFile(fp);
+
+    runtime_info(
+        "AssetLoader", "Read text file '%s' with %zu bytes\n", path, length);
   }
   return buffer;
 }
@@ -65,11 +65,11 @@ Buffer AssetLoader::SyncLoadBinary(const char *path) {
     uint8_t *data = new uint8_t[length];
     fread(data, length, 1, static_cast<FILE *>(fp));
 
-    runtime_info(
-        "AssetLoader", "Read binary file '%s' with %zu bytes\n", path, length);
-
     buffer.set_data_by_pointer(data, length);
     ColseFile(fp);
+
+    runtime_info(
+        "AssetLoader", "Read binary file '%s' with %zu bytes\n", path, length);
   }
   return buffer;
 }

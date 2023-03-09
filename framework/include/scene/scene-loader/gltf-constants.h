@@ -5,9 +5,9 @@
 
 namespace kplge {
 namespace kplgltf {
-using GltfId = unsigned int;
+using GltfId = size_t;
 using GltfNum = float;
-using GltfInt = int;
+using GltfInt = size_t;
 using Vector3Num = std::vector<GltfNum>;
 using Vector4Num = std::vector<GltfNum>;
 using Matrix4X4Num = std::vector<GltfNum>;

@@ -28,9 +28,12 @@ class OpenGLManager : public GraphicManager {
   virtual bool DeleteContext() = 0;
 
   bool InitializeShaders(const char* vsFile, const char* fsFile);
-
   bool InitializeBuffers();
+
   bool RenderBuffers();
+
+  bool SetPerBatchShaderParameters(
+      const char* paramName, const Matrix4X4f& param);
 
   bool LoadNode(SceneNode& node);
   bool LoadMeshNode(SceneMeshNode& node);
@@ -43,6 +46,9 @@ class OpenGLManager : public GraphicManager {
 
   struct DrawBatchContext {
     GLuint vao;
+    GLuint count;
+    GLenum mode;
+    GLenum indices_type;
     Matrix4X4f transform;
   };
 

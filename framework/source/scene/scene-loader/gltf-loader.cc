@@ -21,22 +21,32 @@ bool GltfLoader::ParseGltfFile(GLtfContainer& gLtfContainer, const char* path) {
   json gltfJson =
       json::parse(assetLoader.SyncLoadText(path).get_data_pointer());
 
-  for (auto& el : gltfJson.items()) {
-    if (el.key() == "scene") {
-      if (!ParseValue(gLtfContainer.scene, gltfJson, "scene", true)) return 0;
-    } else if (el.key() == "scenes") {
-      if (!ParseScenes(gLtfContainer, el.value())) return 0;
-    } else if (el.key() == "nodes") {
-      if (!ParseNodes(gLtfContainer, el.value())) return 0;
-    } else if (el.key() == "meshes") {
-      if (!ParseMeshes(gLtfContainer, el.value())) return 0;
-    } else if (el.key() == "accessors") {
-      if (!ParseAccessors(gLtfContainer, el.value())) return 0;
-    } else if (el.key() == "bufferViews") {
-      if (!ParseBufferViews(gLtfContainer, el.value())) return 0;
-    } else if (el.key() == "buffers") {
-      if (!ParseBuffers(gLtfContainer, el.value())) return 0;
-    }
+  if (auto it = gltfJson.find("scene"); it != gltfJson.end()) {
+    if (!ParseValue(gLtfContainer.scene, gltfJson, "scene", true)) return 0;
+  }
+
+  if (auto it = gltfJson.find("scenes"); it != gltfJson.end()) {
+    if (!ParseScenes(gLtfContainer, it.value())) return 0;
+  }
+
+  if (auto it = gltfJson.find("nodes"); it != gltfJson.end()) {
+    if (!ParseNodes(gLtfContainer, it.value())) return 0;
+  }
+
+  if (auto it = gltfJson.find("meshes"); it != gltfJson.end()) {
+    if (!ParseMeshes(gLtfContainer, it.value())) return 0;
+  }
+
+  if (auto it = gltfJson.find("accessors"); it != gltfJson.end()) {
+    if (!ParseAccessors(gLtfContainer, it.value())) return 0;
+  }
+
+  if (auto it = gltfJson.find("bufferViews"); it != gltfJson.end()) {
+    if (!ParseBufferViews(gLtfContainer, it.value())) return 0;
+  }
+
+  if (auto it = gltfJson.find("buffers"); it != gltfJson.end()) {
+    if (!ParseBuffers(gLtfContainer, it.value())) return 0;
   }
 
   return 1;
@@ -227,7 +237,6 @@ bool GltfLoader::ParseBufferViews(GLtfContainer& gLtfContainer, json& source) {
 bool GltfLoader::ParseBuffers(GLtfContainer& gLtfContainer, json& source) {
   for (auto buffer_obj : source) {
     Buffer buffer;
-
     ParseValue(buffer.name, buffer_obj, "name");
 
     ParseValue(buffer.uri, buffer_obj, "uri");
@@ -257,7 +266,12 @@ bool GltfLoader::ParseBufferURI(Buffer& buffer) {
 
 bool GltfLoader::DecodeBufferURI(Buffer& buffer) {
   std::string data;
-  std::string header = "data:application/octet-stream;base64,";
+  std::string header = "data:application/gltf-buffer;base64,";
+  if (buffer.uri.find(header) == 0) {
+    data = base64_decode(buffer.uri.substr(header.size()));
+  }
+
+  header = "data:application/octet-stream;base64,";
   if (buffer.uri.find(header) == 0) {
     data = base64_decode(buffer.uri.substr(header.size()));
   }

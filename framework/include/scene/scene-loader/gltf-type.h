@@ -16,11 +16,11 @@ struct Asset {
   std::string generator;
 
   friend std::ostream& operator<<(std::ostream& out, Asset& asset) {
-    out << "Version: " << asset.version << std::endl;
+    out << "version: " << asset.version << std::endl;
     if (!asset.generator.empty())
-      out << "Generator: " << asset.generator << std::endl;
+      out << "generator: " << asset.generator << std::endl;
     if (!asset.copyright.empty())
-      out << "Copyright: " << asset.copyright << std::endl;
+      out << "copyright: " << asset.copyright << std::endl;
     return out;
   }
 };
@@ -32,7 +32,7 @@ struct Scene {
   friend std::ostream& operator<<(std::ostream& out, Scene& scene) {
     out << "Scene: " << scene.name << std::endl;
     out << " - "
-        << "Nodes: "
+        << "nodes: "
         << "[ ";
     for (size_t i = 0; i < scene.nodes.size(); ++i) {
       out << scene.nodes[i] << (i != scene.nodes.size() - 1 ? ", " : "");
@@ -68,22 +68,22 @@ struct Node {
 
     if (node.mesh != INVALID_ID) {
       out << " - "
-          << "Mesh: " << node.mesh << std::endl;
+          << "mesh: " << node.mesh << std::endl;
     }
 
     if (node.camera != INVALID_ID) {
       out << " - "
-          << "Camera: " << node.mesh << std::endl;
+          << "camera: " << node.camera << std::endl;
     }
 
     if (node.skin != INVALID_ID) {
       out << " - "
-          << "Skin: " << node.skin << std::endl;
+          << "skin: " << node.skin << std::endl;
     }
 
-    if (node.matrix != DEAFULA_MATRIX) {
+    if (!node.matrix.empty()) {
       out << " - "
-          << "Matrix: " << std::endl;
+          << "matrix: " << std::endl;
       for (size_t i = 0; i < 4; ++i) {
         out << "   "
             << "[ ";
@@ -93,9 +93,9 @@ struct Node {
         out << " ]" << std::endl;
       }
     } else {
-      if (node.rotation != DEFAULT_ROTATION) {
+      if (!node.rotation.empty()) {
         out << " - "
-            << "Rotation: "
+            << "rotation: "
             << "[ ";
         for (size_t i = 0; i < 4; ++i) {
           out << node.rotation[i] << (i != 3 ? ", " : "");
@@ -103,9 +103,9 @@ struct Node {
         out << " ]" << std::endl;
       }
 
-      if (node.scale != DEFAULT_SCALE) {
+      if (!node.scale.empty()) {
         out << " - "
-            << "Scale: "
+            << "scale: "
             << "[ ";
         for (size_t i = 0; i < 3; ++i) {
           out << node.scale[i] << (i != 2 ? ", " : "");
@@ -113,9 +113,9 @@ struct Node {
         out << " ]" << std::endl;
       }
 
-      if (node.translation != DEFAULT_TRANSLATION) {
+      if (!node.translation.empty()) {
         out << " - "
-            << "Translation: "
+            << "translation: "
             << "[ ";
         for (size_t i = 0; i < 3; ++i) {
           out << node.translation[i] << (i != 2 ? ", " : "");
@@ -126,7 +126,7 @@ struct Node {
 
     if (!node.weights.empty()) {
       out << " - "
-          << "Weights: "
+          << "weights: "
           << "[ ";
       for (size_t i = 0; i < node.weights.size(); ++i) {
         out << node.weights[i] << (i != node.weights.size() - 1 ? ", " : "");
@@ -141,13 +141,13 @@ struct Primitive {
   std::map<std::string, GltfId> attributes;
   GltfId indices{INVALID_ID};
   GltfId material{INVALID_ID};
-  PrimitiveMode mode{4};
+  PrimitiveMode mode{static_cast<PrimitiveMode>(4)};
   std::vector<std::map<std::string, GltfId>> targets;
 
   friend std::ostream& operator<<(std::ostream& out, Primitive& primitive) {
     out << " | "
         << " - "
-        << "Attributes: " << std::endl;
+        << "attributes: " << std::endl;
     for (auto& [key, value] : primitive.attributes) {
       out << " | "
           << " | "
@@ -157,25 +157,25 @@ struct Primitive {
     if (primitive.indices != INVALID_ID) {
       out << " | "
           << " - "
-          << "Indices: ";
+          << "indices: ";
       out << primitive.indices << std::endl;
     }
 
     if (primitive.material != INVALID_ID) {
       out << " | "
           << " - "
-          << "Material: ";
+          << "material: ";
       out << primitive.material << std::endl;
     }
 
     out << " | "
         << " - "
-        << "Mode: " << primitive.mode << std::endl;
+        << "mode: " << primitive.mode << std::endl;
 
     if (!primitive.targets.empty()) {
       out << " | "
           << " - "
-          << "Targets: " << std::endl;
+          << "targets: " << std::endl;
 
       for (auto& target : primitive.targets) {
         out << " | "
@@ -206,14 +206,14 @@ struct Mesh {
     out << "Mesh: " << mesh.name << std::endl;
 
     out << " - "
-        << "Primitives: " << std::endl;
+        << "primitives: " << std::endl;
     for (auto& primitive : mesh.primitives) {
       out << primitive;
     }
 
     if (!mesh.weights.empty()) {
       out << " - "
-          << "Weights: "
+          << "weights: "
           << "[ ";
       for (size_t i = 0; i < mesh.weights.size(); ++i) {
         out << mesh.weights[i] << (i != mesh.weights.size() - 1 ? ", " : "");
@@ -269,7 +269,7 @@ struct Accessor {
     if (accessor.normalized) {
       out << " - "
           << "normalized: "
-          << "TRUE" << std::endl;
+          << "FALSE" << std::endl;
     }
 
     out << " - "
@@ -325,7 +325,7 @@ struct BufferView {
 
     if (bufferView.buffer != INVALID_ID) {
       out << " - "
-          << "bufferView: " << bufferView.buffer << std::endl;
+          << "buffer: " << bufferView.buffer << std::endl;
     }
 
     out << " - "
@@ -360,6 +360,11 @@ struct Buffer {
 
     out << " - "
         << "byteLength: " << buffer.byteLength << std::endl;
+
+    out << " - "
+        << "data: ";
+    for (auto val : buffer.data) printf("\\x%.2x", val);
+    out << std::endl;
 
     return out;
   }

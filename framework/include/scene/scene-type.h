@@ -2,10 +2,7 @@
 #include "scene-loader.h"
 
 namespace kplge {
-enum class DataType {
-  I8,
-  I16,
-  I32,
+enum class VertexDataType {
   VEC2F,
   VEC3F,
   VEC4F,
@@ -14,7 +11,15 @@ enum class DataType {
   VEC4D,
 };
 
-std::ostream& operator<<(std::ostream& out, DataType& attribute);
+std::ostream& operator<<(std::ostream& out, VertexDataType& attribute);
+
+enum class IndexDataType {
+  I8,
+  I16,
+  I32,
+};
+
+std::ostream& operator<<(std::ostream& out, IndexDataType& attribute);
 
 enum class VertexAttribute {
   POSITION,
@@ -37,7 +42,9 @@ enum class PrimitiveMode {
 
 std::ostream& operator<<(std::ostream& out, PrimitiveMode& mode);
 
-DataType GetDataTypeFromGltf(kplgltf::Accessor accessor);
+IndexDataType GetIndexDataTypeFromGltf(kplgltf::Accessor accessor);
+VertexDataType GetVertexDataTypeFromGltf(kplgltf::Accessor accessor);
+
 PrimitiveMode GetPrimitiveModeFromGltf(kplgltf::PrimitiveMode type);
 
 }  // namespace kplge

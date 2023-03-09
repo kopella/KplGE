@@ -33,6 +33,8 @@ class GLtfContainer {
 
     out << std::endl;
     out << "Scenes: " << std::endl;
+    out << " - "
+        << "count: " << gLtfContainer.scenes.size() << std::endl;
     out << "------" << std::endl;
     for (auto& scene : gLtfContainer.scenes) {
       out << scene;
@@ -41,6 +43,8 @@ class GLtfContainer {
 
     out << std::endl;
     out << "Nodes: " << std::endl;
+    out << " - "
+        << "count: " << gLtfContainer.nodes.size() << std::endl;
     out << "------" << std::endl;
     for (auto& node : gLtfContainer.nodes) {
       out << node;
@@ -49,6 +53,8 @@ class GLtfContainer {
 
     out << std::endl;
     out << "Meshes: " << std::endl;
+    out << " - "
+        << "count: " << gLtfContainer.meshes.size() << std::endl;
     out << "------" << std::endl;
     for (auto& mesh : gLtfContainer.meshes) {
       out << mesh;
@@ -57,6 +63,8 @@ class GLtfContainer {
 
     out << std::endl;
     out << "Accessors: " << std::endl;
+    out << " - "
+        << "count: " << gLtfContainer.accessors.size() << std::endl;
     out << "------" << std::endl;
     for (auto& accessor : gLtfContainer.accessors) {
       out << accessor;
@@ -65,6 +73,8 @@ class GLtfContainer {
 
     out << std::endl;
     out << "BufferViews: " << std::endl;
+    out << " - "
+        << "count: " << gLtfContainer.bufferViews.size() << std::endl;
     out << "------" << std::endl;
     for (auto& bufferView : gLtfContainer.bufferViews) {
       out << bufferView;
@@ -73,6 +83,8 @@ class GLtfContainer {
 
     out << std::endl;
     out << "Buffer: " << std::endl;
+    out << " - "
+        << "count: " << gLtfContainer.buffers.size() << std::endl;
     out << "------" << std::endl;
     for (auto& buffer : gLtfContainer.buffers) {
       out << buffer;

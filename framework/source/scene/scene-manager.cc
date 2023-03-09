@@ -5,8 +5,6 @@
 
 #include "kpllogt.h"
 
-#include "private/matrix.h"
-#include "private/tools.h"
 #include "scene-loader.h"
 #include "scene-mesh.h"
 #include "scene-node.h"
@@ -24,108 +22,83 @@ bool SceneManager::LoadGltfFile(const char* path) {
 
   gltfLoader.ParseGltfFile(gLtfContainer, path);
 
-  auto& scene = gLtfContainer.scenes[gLtfContainer.scene];
+  kplgltf::GltfId scene_id =
+      gLtfContainer.scene != kplgltf::INVALID_ID ? gLtfContainer.scene : 0;
 
-  SceneNode root(scene.name);
+  auto& scene = gLtfContainer.scenes[scene_id];
+  root_.name_ = scene.name;
 
-  LoadGltfNode(root, scene.nodes, gLtfContainer);
+  for (auto id : scene.nodes) {
+    Matrix4X4f transform;
+    identity(transform);
+    LoadGltfNode(id, transform, gLtfContainer);
+  }
 
-  roots_.emplace_back(std::move(root));
   return 1;
 }
 
 bool SceneManager::LoadGltfNode(
-    SceneNode& parent, std::vector<kplgltf::GltfId>& nodeIds,
-    kplgltf::GLtfContainer& gLtfContainer) {
-  for (auto& nodeId : nodeIds) {
-    auto& node = gLtfContainer.nodes[nodeId];
+    kplgltf::GltfId nodeId, Matrix4X4f transform,
+    const kplgltf::GLtfContainer& gLtfContainer) {
+  auto node = gLtfContainer.nodes[nodeId];
 
-    // Only children:
-    if (node.mesh == kplgltf::INVALID_ID &&
-        node.camera == kplgltf::INVALID_ID &&
-        node.skin == kplgltf::INVALID_ID) {
-      SceneNode newNode = SceneNode(node.name);
-      if (!node.matrix.empty()) {
-        newNode.GetTransforms().emplace_back(
-            transpose(Matrix4X4f{node.matrix.begin(), node.matrix.end()}));
-      } else {
-        Matrix4X4f res;
-        identity(res);
-        if (!node.scale.empty())
-          res = multiply(
-              build_scale_matrix(node.scale[0], node.scale[1], node.scale[2]),
-              res);
-        if (!node.rotation.empty())
-          res = multiply(
-              build_rotation_matrix(
-                  node.rotation[0], node.rotation[1], node.rotation[2],
-                  node.rotation[3]),
-              res);
-        if (!node.translation.empty())
-          res = multiply(
-              build_translation_matrix(
-                  node.translation[0], node.translation[1],
-                  node.translation[2]),
-              res);
-        newNode.GetTransforms().emplace_back(std::move(res));
-      }
-      if (!node.children.empty()) {
-        LoadGltfNode(newNode, node.children, gLtfContainer);
-      }
-      parent.GetChildren().emplace_back(std::move(newNode));
-    }
+  // Load mesh.
+  if (node.mesh != kplgltf::INVALID_ID) {
+    SceneMeshNode meshNode{node.name};
 
-    // Mesh:
-    if (node.mesh != kplgltf::INVALID_ID) {
-      SceneMeshNode meshNode = SceneMeshNode(node.name);
-      if (!node.matrix.empty()) {
-        meshNode.GetTransforms().emplace_back(
-            transpose(Matrix4X4f{node.matrix.begin(), node.matrix.end()}));
-      } else {
-        Matrix4X4f res;
-        identity(res);
-        if (!node.scale.empty())
-          res = multiply(
-              build_scale_matrix(node.scale[0], node.scale[1], node.scale[2]),
-              res);
-        if (!node.rotation.empty())
-          res = multiply(
-              build_rotation_matrix(
-                  node.rotation[0], node.rotation[1], node.rotation[2],
-                  node.rotation[3]),
-              res);
-        if (!node.translation.empty())
-          res = multiply(
-              build_translation_matrix(
-                  node.translation[0], node.translation[1],
-                  node.translation[2]),
-              res);
-        meshNode.GetTransforms().emplace_back(std::move(res));
-      }
-      meshNode.GetObject() = std::make_shared<SceneMesh>(
-          gLtfContainer.meshes[node.mesh], gLtfContainer);
-      if (!node.children.empty()) {
-        LoadGltfMeshNode(meshNode, node.children, gLtfContainer);
-      }
-      parent.GetMeshNodes().emplace_back(std::move(meshNode));
+    Matrix4X4f indi_transform;
+    identity(indi_transform);
+
+    GetIndiTransformMatrix(node, indi_transform);
+
+    meshNode.GetTransforms().emplace_back(
+        std::move(multiply(transform, indi_transform)));
+
+    meshNode.GetObject() = std::make_shared<SceneMesh>(
+        gLtfContainer.meshes[node.mesh], gLtfContainer);
+
+    root_.GetMeshNodes().emplace_back(std::move(meshNode));
+  }
+
+  // Process child node.
+  if (!node.children.empty()) {
+    for (auto id : node.children) {
+      Matrix4X4f indi_transform;
+      identity(indi_transform);
+
+      GetIndiTransformMatrix(node, indi_transform);
+
+      LoadGltfNode(id, multiply(transform, indi_transform), gLtfContainer);
     }
+  }
+  return 1;
+}
+
+bool SceneManager::GetIndiTransformMatrix(
+    const kplgltf::Node& node, Matrix4X4f& indi_transform) {
+  if (!node.matrix.empty()) {
+    indi_transform =
+        transpose(Matrix4X4f{node.matrix.begin(), node.matrix.end()});
+
+  } else {
+    if (!node.scale.empty())
+      indi_transform = multiply(
+          build_scale_matrix(node.scale[0], node.scale[1], node.scale[2]),
+          indi_transform);
+    if (!node.rotation.empty())
+      indi_transform = multiply(
+          build_rotation_matrix(
+              node.rotation[0], node.rotation[1], node.rotation[2],
+              node.rotation[3]),
+          indi_transform);
+    if (!node.translation.empty())
+      indi_transform = multiply(
+          build_translation_matrix(
+              node.translation[0], node.translation[1], node.translation[2]),
+          indi_transform);
   }
 
   return 1;
 }
 
-bool SceneManager::LoadGltfMeshNode(
-    SceneMeshNode& parent, std::vector<kplgltf::GltfId>& nodeIds,
-    kplgltf::GLtfContainer& gLtfContainer) {
-  for (auto& nodeId : nodeIds) {
-    auto& node = gLtfContainer.nodes[nodeId];
-    SceneMeshNode meshNode = SceneMeshNode(node.name);
-    if (!node.children.empty()) {
-      LoadGltfMeshNode(meshNode, node.children, gLtfContainer);
-    }
-    parent.GetMeshNodes().emplace_back(std::move(meshNode));
-  }
-
-  return 1;
-}
 }  // namespace kplge

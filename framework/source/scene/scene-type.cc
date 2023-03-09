@@ -1,34 +1,40 @@
 #include "scene-type.h"
 
 namespace kplge {
-std::ostream& operator<<(std::ostream& out, DataType& type) {
+std::ostream& operator<<(std::ostream& out, VertexDataType& type) {
   switch (type) {
-    case DataType::I8:
-      out << "I8";
-      break;
-    case DataType::I16:
-      out << "I16";
-      break;
-    case DataType::I32:
-      out << "I32";
-      break;
-    case DataType::VEC2F:
+    case VertexDataType::VEC2F:
       out << "VEC2F";
       break;
-    case DataType::VEC3F:
+    case VertexDataType::VEC3F:
       out << "VEC3F";
       break;
-    case DataType::VEC4F:
+    case VertexDataType::VEC4F:
       out << "VEC4F";
       break;
-    case DataType::VEC2D:
+    case VertexDataType::VEC2D:
       out << "VEC2D";
       break;
-    case DataType::VEC3D:
+    case VertexDataType::VEC3D:
       out << "VEC3D";
       break;
-    case DataType::VEC4D:
+    case VertexDataType::VEC4D:
       out << "VEC4D";
+      break;
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, IndexDataType& type) {
+  switch (type) {
+    case IndexDataType::I8:
+      out << "I8";
+      break;
+    case IndexDataType::I16:
+      out << "I16";
+      break;
+    case IndexDataType::I32:
+      out << "I32";
       break;
   }
   return out;
@@ -79,37 +85,34 @@ std::ostream& operator<<(std::ostream& out, PrimitiveMode& mode) {
   return out;
 }
 
-DataType GetDataTypeFromGltf(kplgltf::Accessor accessor) {
+IndexDataType GetIndexDataTypeFromGltf(kplgltf::Accessor accessor) {
   switch (accessor.type) {
-    case kplgltf::AccessorType::OTHER_TYPE:
-      break;
     case kplgltf::AccessorType::SCALAR:
       switch (accessor.componentType) {
         case kplgltf::ComponentType::UNSIGNED_BYTE:
-          return DataType::I8;
+          return IndexDataType::I8;
           break;
         case kplgltf::ComponentType::UNSIGNED_SHORT:
-          return DataType::I16;
+          return IndexDataType::I16;
           break;
         case kplgltf::ComponentType::UNSIGNED_INT:
-          return DataType::I32;
+          return IndexDataType::I32;
           break;
       }
       break;
+  }
+}
+
+VertexDataType GetVertexDataTypeFromGltf(kplgltf::Accessor accessor) {
+  switch (accessor.type) {
     case kplgltf::AccessorType::VEC2:
-      return DataType::VEC2F;
+      return VertexDataType::VEC2F;
       break;
     case kplgltf::AccessorType::VEC3:
-      return DataType::VEC3F;
+      return VertexDataType::VEC3F;
       break;
     case kplgltf::AccessorType::VEC4:
-      return DataType::VEC4F;
-      break;
-    case kplgltf::AccessorType::MAT2:
-      break;
-    case kplgltf::AccessorType::MAT3:
-      break;
-    case kplgltf::AccessorType::MAT4:
+      return VertexDataType::VEC4F;
       break;
   }
 }

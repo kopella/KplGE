@@ -3,40 +3,38 @@
 #include <ostream>
 
 #include "../interface/manager.h"
+#include "private/matrix.h"
+#include "scene-loader/gltf-constants.h"
 #include "scene-node.h"
 #include "scene-loader.h"
 
 namespace kplge {
 class SceneManager : public IManager {
  private:
-  std::vector<SceneNode> roots_;
+  SceneNode root_;
 
  public:
   erroc Initialize() override;
   erroc Finalize() override;
   erroc Tick() override;
 
-  SceneNode& GetSceneRenderRoot(size_t n) { return roots_.at(n); }
+  SceneNode& GetSceneRenderRoot() { return root_; }
 
   bool LoadGltfFile(const char* path);
 
   friend std::ostream& operator<<(std::ostream& out, SceneManager& manager) {
     out << "Root nodes: " << std::endl;
     out << "------ " << std::endl;
-    for (size_t i = 0; i < manager.roots_.size(); ++i) {
-      out << "Root " << i << " : " << std::endl;
-      out << manager.roots_[i] << std::endl;
-    }
+    out << manager.root_ << std::endl;
+
     return out;
   }
 
  private:
   bool LoadGltfNode(
-      SceneNode& parent, std::vector<kplgltf::GltfId>& nodeIds,
-      kplgltf::GLtfContainer& gLtfContainer);
+      kplgltf::GltfId nodeId, Matrix4X4f transform,
+      const kplgltf::GLtfContainer& gLtfContainer);
 
-  bool LoadGltfMeshNode(
-      SceneMeshNode& parent, std::vector<kplgltf::GltfId>& nodeIds,
-      kplgltf::GLtfContainer& gLtfContainer);
+  bool GetIndiTransformMatrix(const kplgltf::Node& node, Matrix4X4f& indi_transform);
 };
 }  // namespace kplge
