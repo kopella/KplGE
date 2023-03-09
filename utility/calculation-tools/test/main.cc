@@ -72,13 +72,15 @@ int main() {
             << transform(mat_transform, vec_transform) << std::endl;
   std::cout << "multiply(mat_1, mat_2):" << multiply(mat_1, mat_2);
 
+  std::cout << "build_translation_matrix"
+               "(10.0, 20.0, 30.0): "
+            << build_translation_matrix(10.0, 20.0, 30.0);
+
   std::cout << "build_rotation_matrix"
-               "(0, -0.7071068286895752, 0, 0.7071067690849304): "
-            << build_rotation_matrix(
-                   0, -0.7071068286895752, 0, 0.7071067690849304);
+               "(0.259, 0.0, 0.0, 0.966): "
+            << build_rotation_matrix(0.259, 0.0, 0.0, 0.966);
 
   std::cout << "build_scale_matrix"
-               "(0.5700311064720154, 0.5700311064720154, 0.5700311064720154): "
-            << build_scale_matrix(
-                   0.5700311064720154, 0.5700311064720154, 0.5700311064720154);
+               "(2.0, 1.0, 0.5): "
+            << build_scale_matrix(2.0, 1.0, 0.5);
 }
