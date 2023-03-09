@@ -69,17 +69,11 @@ bool GltfLoader::ParseNodes(GLtfContainer& gLtfContainer, json& source) {
 
     ParseValue(node.skin, node_obj, "skin");
 
-    std::vector<GltfNum> matrix;
-    ParseValueArray<GltfNum>(matrix, node_obj, "matrix");
-    if (matrix.empty()) {
-      std::vector<GltfNum> rotation;
-      ParseValueArray<GltfNum>(rotation, node_obj, "rotation");
-      std::vector<GltfNum> scale;
-      ParseValueArray<GltfNum>(scale, node_obj, "scale");
-      std::vector<GltfNum> translation;
-      ParseValueArray<GltfNum>(translation, node_obj, "translation");
-    } else {
-      node.matrix = std::move(matrix);
+    ParseValueArray<GltfNum>(node.matrix, node_obj, "matrix");
+    if (node.matrix.empty()) {
+      ParseValueArray<GltfNum>(node.scale, node_obj, "scale");
+      ParseValueArray<GltfNum>(node.rotation, node_obj, "rotation");
+      ParseValueArray<GltfNum>(node.translation, node_obj, "translation");
     }
 
     ParseValueArray<GltfNum>(node.weights, node_obj, "weights");

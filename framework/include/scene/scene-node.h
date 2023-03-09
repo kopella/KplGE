@@ -7,6 +7,7 @@
 #include "kplcalct.h"
 
 #include "private/matrix.h"
+#include "private/vector.h"
 #include "scene-mesh.h"
 
 using namespace kplutl;
@@ -28,7 +29,7 @@ class SceneMeshNode : public SceneBaseNode {
   std::shared_ptr<SceneMesh> mesh_{};
   std::vector<SceneMeshNode> meshNodes_{};
 
-  Matrix4X4f transform_;
+  std::vector<Matrix4X4f> transforms_;
 
  public:
   SceneMeshNode() {}
@@ -39,9 +40,23 @@ class SceneMeshNode : public SceneBaseNode {
   std::vector<SceneMeshNode>& GetChildren() { return meshNodes_; }
   std::vector<SceneMeshNode>& GetMeshNodes() { return meshNodes_; }
 
+  std::vector<Matrix4X4f>& GetTransforms() { return transforms_; }
+
+  Matrix4X4f GetTransformMatrix() {
+    Matrix4X4f res;
+    identity(res);
+    for (auto transform : transforms_) {
+      res = multiply(transform, res);
+    }
+    return res;
+  }
+
   friend std::ostream& operator<<(std::ostream& out, SceneMeshNode& node) {
     out << "Mesh Node: " << node.name_ << std::endl;
     out << *node.mesh_;
+    if (!node.transforms_.empty()) {
+      out << " - Transform matrix: " << node.GetTransformMatrix();
+    }
     if (!node.meshNodes_.empty()) {
       out << "> Children mesh nodes: " << std::endl;
       for (auto& child : node.meshNodes_) {

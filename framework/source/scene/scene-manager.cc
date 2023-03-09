@@ -1,9 +1,12 @@
 #include "scene-manager.h"
 
 #include <memory>
+#include <utility>
 
 #include "kpllogt.h"
 
+#include "private/matrix.h"
+#include "private/tools.h"
 #include "scene-loader.h"
 #include "scene-mesh.h"
 #include "scene-node.h"
@@ -51,6 +54,30 @@ bool SceneManager::LoadGltfNode(
     // Mesh:
     if (node.mesh != kplgltf::INVALID_ID) {
       SceneMeshNode meshNode = SceneMeshNode(node.name);
+      if (!node.matrix.empty()) {
+        meshNode.GetTransforms().emplace_back(
+            node.matrix.begin(), node.matrix.end());
+      } else {
+        Matrix4X4f res;
+        identity(res);
+        if (!node.scale.empty())
+          res = multiply(
+              build_scale_matrix(node.scale[0], node.scale[1], node.scale[2]),
+              res);
+        if (!node.rotation.empty())
+          res = multiply(
+              build_rotation_matrix(
+                  node.rotation[0], node.rotation[1], node.rotation[2],
+                  node.rotation[3]),
+              res);
+        if (!node.translation.empty())
+          res = multiply(
+              build_translation_matrix(
+                  node.translation[0], node.translation[1],
+                  node.translation[2]),
+              res);
+        meshNode.GetTransforms().emplace_back(std::move(res));
+      }
       meshNode.GetObject() = std::make_shared<SceneMesh>(
           gLtfContainer.meshes[node.mesh], gLtfContainer);
       if (!node.children.empty()) {

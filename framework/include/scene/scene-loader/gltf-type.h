@@ -48,10 +48,10 @@ struct Node {
   GltfId mesh{INVALID_ID};
   GltfId camera{INVALID_ID};
   GltfId skin{INVALID_ID};
-  Matrix4X4Num matrix{DEAFULA_MATRIX};
-  Vector4Num rotation{DEFAULT_ROTATION};
-  Vector3Num scale{DEFAULT_SCALE};
-  Vector3Num translation{DEFAULT_TRANSLATION};
+  Matrix4X4Num matrix;
+  Vector3Num scale;
+  Vector4Num rotation;
+  Vector3Num translation;
   std::vector<GltfNum> weights;
 
   friend std::ostream& operator<<(std::ostream& out, Node& node) {

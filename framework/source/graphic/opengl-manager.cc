@@ -67,6 +67,9 @@ bool OpenGLManager::LoadNode(SceneNode& node) {
     }
   }
   for (auto& meshNode : node.GetMeshNodes()) {
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
     LoadMeshNode(meshNode);
   }
   return 1;
