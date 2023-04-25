@@ -15,7 +15,7 @@ int main() {
   windowsApplication->RegisterManager(wglManager);
   windowsApplication->RegisterManager(sceneManager);
 
-  sceneManager->LoadGltfFile("test/A Minimal glTF File/A Minimal glTF File.gltf");
+  sceneManager->LoadGltfFile("test/mesh-test.gltf");
 
   std::cout << *sceneManager;
 

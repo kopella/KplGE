@@ -46,7 +46,7 @@ class OpenGLManager : public GraphicManager {
 
   struct DrawBatchContext {
     GLuint vao;
-    GLuint count;
+    GLsizei count;
     GLenum mode;
     GLenum indices_type;
     Matrix4X4f transform;

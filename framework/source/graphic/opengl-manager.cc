@@ -79,10 +79,9 @@ bool OpenGLManager::InitializeBuffers() {
 bool OpenGLManager::RenderBuffers() {
   for (auto dbc : drawBatchContexts_) {
     glUseProgram(shaderProgram_);
-    Matrix4X4f view{{1, 0, 0, 2}, {0, 1, 0, 3}, {0, 0, 0, -4}, {0, 0, 0, 1}};
     SetPerBatchShaderParameters("ModelMatrix", dbc.transform);
-    glDrawArrays(dbc.mode, 0, dbc.count);
-    // glDrawElements(dbc.mode, dbc.count, dbc.indices_type, 0x00);
+    // glDrawArrays(dbc.mode, 0, dbc.count);
+    glDrawElements(dbc.mode, dbc.count, dbc.indices_type, 0);
   }
 
   return 1;
@@ -110,15 +109,18 @@ bool OpenGLManager::LoadMeshNode(SceneMeshNode& node) {
   glBindVertexArray(vao);
 
   auto mesh = node.GetMesh();
+  GLsizei indices_count;
   GLenum indices_type;
   for (auto indexArray : mesh->GetIndexArraies()) {
+    std::cout << indexArray;
     GLuint ebo;
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, indexArray.GetData().size(),
+        GL_ELEMENT_ARRAY_BUFFER, (size_t)indexArray.GetData().size(),
         indexArray.GetData().data(), GL_STATIC_DRAW);
 
+    indices_count = indexArray.count_;
     switch (indexArray.dataType_) {
       case IndexDataType::I8:
         indices_type = GL_UNSIGNED_BYTE;
@@ -132,7 +134,6 @@ bool OpenGLManager::LoadMeshNode(SceneMeshNode& node) {
     buffers_.push_back(ebo);
   }
 
-  GLuint count;
   for (auto vertexArray : mesh->GetVertexArraies()) {
     GLuint vbo;
     glGenBuffers(1, &vbo);
@@ -142,8 +143,6 @@ bool OpenGLManager::LoadMeshNode(SceneMeshNode& node) {
         vertexArray.GetData().data(), GL_STATIC_DRAW);
 
     buffers_.push_back(vbo);
-
-    count = vertexArray.count_;
 
     GLuint vaa;
     switch (vertexArray.attribute_) {
@@ -194,8 +193,8 @@ bool OpenGLManager::LoadMeshNode(SceneMeshNode& node) {
 
     glEnableVertexAttribArray(vaa);
     glVertexAttribPointer(
-        vaa, size, type, vertexArray.normalized_ ? GL_TRUE : GL_FALSE, 0,
-        (void*)0);
+        vaa, size, type, vertexArray.normalized_ ? GL_TRUE : GL_FALSE,
+        vertexArray.byteStride_, (char*)vertexArray.byteOffset_);
   }
 
   GLenum mode;
@@ -226,7 +225,7 @@ bool OpenGLManager::LoadMeshNode(SceneMeshNode& node) {
   DrawBatchContext dbc;
   dbc.vao = vao;
   dbc.mode = mode;
-  dbc.count = count;
+  dbc.count = indices_count;
   dbc.indices_type = indices_type;
   dbc.transform = node.GetTransformMatrix();
   drawBatchContexts_.emplace_back(std::move(dbc));

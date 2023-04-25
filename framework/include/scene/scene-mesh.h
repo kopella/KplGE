@@ -35,6 +35,8 @@ class IndexArray {
     out << " - "
         << "ByteStride: " << array.byteStride_ << std::endl;
     out << " - "
+        << "ByteLength: " << array.data_.size() << std::endl;
+    out << " - "
         << "Contents: ";
     for (auto val : array.data_) printf("\\x%.2x", val);
     out << std::endl;
@@ -72,6 +74,8 @@ class VertexArray {
         << "ByteOffset: " << array.byteOffset_ << std::endl;
     out << " - "
         << "ByteStride: " << array.byteStride_ << std::endl;
+    out << " - "
+        << "ByteLength: " << array.data_.size() << std::endl;
     out << " - "
         << "Normalized: " << array.normalized_ << std::endl;
     out << " - "
